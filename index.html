@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>GMHSS Pishin - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-storage-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif; 
+            background: #ffffff; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @font-face {
+            font-family: 'Jameel Noori Nastaleeq';
+            src: url('https://fonts.jameelnoori.com/jameel-noori-nastaleeq.woff2') format('woff2'),
+                 url('https://fonts.jameelnoori.com/jameel-noori-nastaleeq.woff') format('woff'),
+                 url('https://cdn.jsdelivr.net/gh/akeelali/jameel-noori-nastaleeq@main/Jameel-Noori-Nastaleeq.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Jameel Noori Nastaleeq';
+            src: local('Jameel Noori Nastaleeq'),
+                 local('Jameel Noori Nastaleeq Regular'),
+                 url('https://raw.githubusercontent.com/nawzil/jameel-noori-nastaleeq/master/Jameel%20Noori%20Nastaleeq.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        .urdu-text { 
+            font-family: 'Jameel Noori Nastaleeq', 'Jameel Noori Nastaleeq Regular', 'Noto Nastaliq Urdu', 'AlQalam Shahzaib', 'Arial Unicode MS', 'sans-serif' !important; 
+            direction: rtl; 
+            font-size: 1.3rem; 
+            line-height: 2;
+            font-weight: normal;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .urdu-text, 
+        [lang="ur"],
+        .school-name-urdu,
+        #schoolNameUrdu,
+        .estd-badge,
+        .nav-text,
+        .tab-text,
+        .stat-label,
+        .btn,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+        
+        body.urdu-mode,
+        body.urdu-mode .header *,
+        body.urdu-mode .bottom-nav *,
+        body.urdu-mode .tab-bar *,
+        body.urdu-mode .stat-card *,
+        body.urdu-mode .btn,
+        body.urdu-mode input,
+        body.urdu-mode select,
+        body.urdu-mode textarea {
+            font-family: 'Jameel Noori Nastaleeq', 'Jameel Noori Nastaleeq Regular', 'Noto Nastaliq Urdu', 'sans-serif' !important;
+        }
+        
+        .mobile-container { 
+            width: 100%;
+            min-height: 100vh;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        
+        .header { 
+            background: #ffffff; 
+            padding: 28px 16px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-bottom: 4px solid #2e7d32;
+            box-shadow: 0 4px 12px rgba(0,80,0,0.08);
+        }
+        
+        .logo-container img {
+            width: 110%;
+            height: 90%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #2e7d32;
+        }
+        
+        .school-name-urdu { 
+            font-family: 'Jameel Noori Nastaleeq', 'Jameel Noori Nastaleeq Regular', 'Noto Nastaliq Urdu', 'sans-serif' !important; 
+            font-size: 2.2rem; 
+            color: #006400;
+            margin-top: 4px;
+        }
+        
+        .estd-badge { 
+            background: #004225;
+            color: #ffffff; 
+            display: inline-block; 
+            padding: 10px 30px; 
+            border-radius: 40px; 
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 5px 12px rgba(46,125,50,0.3);
+            margin-top: 5px;
+        }
+        
+        .lang-switcher { 
+            display: flex; 
+            background: #e8f5e9;
+            border-radius: 50px; 
+            margin: 18px 16px 12px; 
+            padding: 4px;
+            border: 1px solid #a5d6a7;
+        }
+        
+        .lang-btn { 
+            flex: 1; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 50px; 
+            font-weight: 600; 
+            background: transparent; 
+            color: #1b5e20; 
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .lang-btn.active { 
+            background: #2e7d32; 
+            color: #ffffff; 
+            box-shadow: 0 2px 8px rgba(46,125,50,0.3);
+        }
+        
+        .login-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .login-card {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 30px 25px;
+            box-shadow: 0 10px 30px rgba(0,80,0,0.1);
+            border: 2px solid #c8e6c9;
+        }
+        
+        .login-title {
+            color: #1b5e20;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-title i {
+            color: #2e7d32;
+            margin-right: 10px;
+        }
+        
+        .login-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .login-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1b5e20;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .login-form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e8f5e9;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f9fff9;
+        }
+        
+        .login-form-group input:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .login-btn-primary {
+            background: #2e7d32;
+            color: white;
+            box-shadow: 0 8px 18px -5px #2e7d32;
+        }
+        
+        .login-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -5px #1b5e20;
+        }
+        
+        .login-btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #2e7d32;
+        }
+        
+        .login-footer a {
+            color: #1b5e20;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #d32f2f;
+            padding: 12px;
+            border-radius: 50px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #ffcdd2;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 50px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #a5d6a7;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .login-divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .login-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #c8e6c9;
+            z-index: 1;
+        }
+        
+        .login-divider span {
+            background: white;
+            padding: 0 15px;
+            color: #2e7d32;
+            position: relative;
+            z-index: 2;
+            font-size: 0.9rem;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ffebee;
+            border: 2px solid #ffcdd2;
+            color: #d32f2f;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+            z-index: 100;
+        }
+        
+        .logout-btn:hover {
+            background: #ffcdd2;
+        }
+        
+        .logout-btn i {
+            margin-right: 8px;
+        }
+        
+        .main-content {
+            display: none;
+        }
+        
+        .stats-row { 
+            display: flex; 
+            gap: 12px; 
+            padding: 0 16px 20px; 
+        }
+        
+        .stat-card { 
+            background: #f1f8e9;
+            flex: 1; 
+            padding: 16px 4px; 
+            border-radius: 24px; 
+            text-align: center; 
+            box-shadow: 0 4px 10px rgba(0,50,0,0.05);
+            border: 1px solid #c8e6c9;
+            transition: all 0.3s ease;
+            animation: softPulse 5s infinite ease-in-out;
+        }
+        
+        @keyframes softPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .stat-number { 
+            font-size: 2rem; 
+            font-weight: 800; 
+            color: #1b5e20; 
+            line-height: 1.2;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .stat-label {
+            color: #2e7d32;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .fade-out {
+            opacity: 0;
+        }
+        .fade-in {
+            opacity: 1;
+        }
+        
+        .tab-bar { 
+            display: flex; 
+            background: #e8f5e9;
+            border-radius: 50px; 
+            margin: 0 16px 20px; 
+            padding: 4px;
+            border: 1px solid #a5d6a7;
+        }
+        
+        .tab { 
+            flex: 1; 
+            padding: 12px 0; 
+            border: none; 
+            border-radius: 50px; 
+            font-weight: 600; 
+            background: transparent; 
+            color: #1b5e20; 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .tab.active { 
+            background: #2e7d32; 
+            color: #ffffff; 
+            box-shadow: 0 2px 8px rgba(46,125,50,0.3);
+        }
+        
+        .panel { display: none; padding: 0 16px 20px; flex: 1; }
+        .panel.active { display: block; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        input, select, textarea { 
+            width: 100%; 
+            padding: 15px; 
+            border: 1px solid #c8e6c9; 
+            border-radius: 18px; 
+            font-size: 1rem;
+            background: #ffffff;
+            color: #1b5e20;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,30,0,0.02);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46,125,50,0.15);
+        }
+        
+        input::placeholder { color: #81c784; }
+        select option { background: #ffffff; color: #1b5e20; }
+        
+        input[readonly] {
+            background-color: #f5f5f5;
+            color: #2e7d32;
+            font-weight: 500;
+            cursor: default;
+        }
+        
+        .urdu-mode input[readonly] {
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif !important;
+        }
+        
+        .photo-area { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+            align-items: center; 
+            background: #f1f8e9;
+            padding: 15px;
+            border-radius: 24px;
+            box-shadow: 0 4px 10px rgba(0,50,0,0.03);
+            border: 1px solid #c8e6c9;
+        }
+        
+        .photo-preview { 
+            width: 90px; 
+            height: 110px; 
+            border-radius: 18px; 
+            border: 2px dashed #2e7d32; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden;
+            background: #ffffff;
+            position: relative;
+        }
+        
+        .photo-preview i { font-size: 2.5rem; color: #81c784; }
+        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .photo-options { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .photo-btn { 
+            padding: 12px; border-radius: 16px; border: none; font-weight: 600; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; 
+            transition: 0.2s;
+        }
+        .camera-btn { background: #2e7d32; color: white; }
+        .gallery-btn { background: #ffffff; color: #1b5e20; border: 1px solid #a5d6a7; }
+        .photo-hint { font-size: 0.75rem; color: #2e7d32; margin: 5px 15px; text-align: center; }
+        
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 40px; 
+            border: none; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        
+        .btn-primary { background: #2e7d32; color: white; box-shadow: 0 8px 18px -5px #2e7d32; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px #1b5e20; }
+        .btn-success { background: #2e7d32; color: white; }
+        .btn-outline { border: 2px solid #2e7d32; color: #1b5e20; background: transparent; }
+        .btn-outline:hover { background: #e8f5e9; }
+        .btn-danger { background: #d32f2f; color: white; }
+        .btn-info { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+        .btn-warning { background: #ff8f00; color: white; }
+
+        .class-filter-section {
+            background: #f1f8e9; border-radius: 24px; padding: 16px; margin-bottom: 16px; border: 1px solid #c8e6c9;
+        }
+        .class-filter-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; color: #1b5e20; display: flex; justify-content: space-between; align-items: center; }
+        .class-filter-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; max-height: 180px; overflow-y: auto; padding: 3px; }
+        .class-badge { background: #ffffff; padding: 8px 14px; border-radius: 25px; font-size: 0.85rem; font-weight: 500; color: #1b5e20; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; border: 1px solid #a5d6a7; }
+        .class-badge:hover { background: #e8f5e9; }
+        .class-badge.active { background: #2e7d32; color: white; border-color: #2e7d32; }
+        .class-badge .count { background: #c8e6c9; padding: 2px 6px; border-radius: 15px; font-size: 0.7rem; color:#1b5e20; }
+        .class-badge.active .count { background: #81c784; color: #1b5e20; }
+        
+        .student-card { 
+            background: #ffffff; border-radius: 24px; padding: 16px; margin-bottom: 12px; 
+            display: flex; gap: 15px; border: 1px solid #c8e6c9; box-shadow: 0 4px 12px rgba(0,30,0,0.03);
+        }
+        .student-avatar { width: 60px; height: 60px; border-radius: 18px; overflow: hidden; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #2e7d32; border: 2px solid #2e7d32; }
+        .student-info { flex: 1; }
+        .student-name { font-weight: 700; color: #1b5e20; font-size: 1.1rem; margin-bottom: 4px; }
+        .student-details { font-size: 0.8rem; color: #2e7d32; margin-bottom: 4px; }
+        .student-contact { font-size: 0.75rem; color: #388e3c; margin-bottom: 8px; }
+        .student-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .action-btn { padding: 6px 14px; border-radius: 30px; border: none; font-size: 0.7rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-weight:600; }
+        .action-btn.print { background: #2e7d32; color: white; }
+        .action-btn.thermal { background: #0088cc; color: white; } 
+        .action-btn.edit { background: #ffb300; color: #1f2a0e; }
+        .action-btn.delete { background: #d32f2f; color: white; }
+        .action-btn.pass { background: #2e7d32; color: white; }
+        .action-btn.fail { background: #b71c1c; color: white; }
+        .action-btn.left { background: #6c757d; color: white; }
+        .left-badge { background: #6c757d; color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; margin-left: 8px; }
+        
+        .status-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        .status-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid #a5d6a7;
+            background: #f1f8e9;
+            color: #1b5e20;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .status-btn.active {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+        
+        .bottom-nav { 
+            background: #ffffff; padding: 12px 20px; display: flex; justify-content: space-around; 
+            border-top: 3px solid #2e7d32; box-shadow: 0 -4px 12px rgba(0,30,0,0.05);
+            margin-top: auto;
+        }
+        .nav-item { color: #81c784; text-align: center; font-size: 0.7rem; cursor: pointer; transition: 0.2s; padding: 8px 20px; border-radius: 30px; }
+        .nav-item.active { background: #e8f5e9; color: #1b5e20; font-weight:600; }
+        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 2px; }
+
+        .search-export { display: flex; gap: 10px; margin-bottom: 15px; }
+        .search-export input { flex: 1; background: #ffffff; border: 1px solid #c8e6c9; padding: 14px; color: #1b5e20; }
+        .search-export input::placeholder { color: #a5d6a7; }
+        .search-export button { width: auto; padding: 0 20px; margin-top: 0; }
+
+        .class-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; margin: 15px 0; }
+        .class-stat-item { background: #f1f8e9; padding: 10px 5px; border-radius: 20px; text-align: center; border: 1px solid #c8e6c9; }
+        .class-stat-item .class-name { font-weight: 600; color: #1b5e20; font-size: 0.75rem; }
+        .class-stat-item .class-count { font-size: 1.2rem; font-weight: 700; color: #2e7d32; }
+
+        .cropper-modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,30,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .cropper-container { background: #ffffff; padding: 20px; border-radius: 30px; width: 90%; max-width: 400px; border: 3px solid #2e7d32; }
+        .cropper-container h3 { color: #1b5e20; }
+        .cropper-box { max-height: 60vh; overflow: hidden; margin-bottom: 15px; background: #e8f5e9; border-radius: 20px; }
+        .cropper-actions button { flex:1; padding:14px; border-radius: 40px; border:none; font-weight:600; cursor:pointer; }
+        .crop-btn { background: #2e7d32; color: white; }
+        .cancel-btn { background: #f5f5f5; color: #1b5e20; border:1px solid #c8e6c9; }
+
+        .certificate-modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,30,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .certificate-content { background: #ffffff; padding: 25px; border-radius: 30px; max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto; border: 3px solid #2e7d32; }
+        
+        .professional-certificate {
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Arial', sans-serif;
+            background: #fff;
+            border: 12px double #2e7d32;
+            padding: 30px 25px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,80,0,0.2);
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .certificate-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .certificate-logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .certificate-school-name {
+            font-size: 2.5rem;
+            color: #006400;
+            font-weight: bold;
+            line-height: 1.3;
+        }
+        .certificate-title {
+            font-size: 2rem;
+            color: #2e7d32;
+            border-bottom: 2px solid #a5d6a7;
+            display: inline-block;
+            padding-bottom: 5px;
+            margin: 15px 0 25px;
+            letter-spacing: 2px;
+        }
+        .certificate-body {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .certificate-details {
+            flex: 2;
+            font-size: 1.2rem;
+            line-height: 2;
+        }
+        .certificate-details p {
+            margin: 10px 0;
+            display: flex;
+            align-items: baseline;
+        }
+        .certificate-details strong {
+            min-width: 140px;
+            color: #1b5e20;
+        }
+        .certificate-photo {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .certificate-photo img {
+            width: 130px;
+            height: 160px;
+            object-fit: cover;
+            border: 3px solid #2e7d32;
+            border-radius: 15px;
+            background: #f1f8e9;
+            padding: 5px;
+        }
+        .certificate-photo .no-photo {
+            width: 130px;
+            height: 160px;
+            border: 3px dashed #2e7d32;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fff9;
+            color: #81c784;
+            font-size: 3rem;
+        }
+        .certificate-signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            align-items: flex-end;
+        }
+        .signature-box {
+            text-align: center;
+            width: 200px;
+        }
+        .signature-line {
+            border-bottom: 2px solid #2e7d32;
+            margin: 10px 0 5px;
+            height: 30px;
+            width: 100%;
+        }
+        .signature-label {
+            font-weight: bold;
+            color: #1b5e20;
+            font-size: 1rem;
+        }
+        .center-school {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #006400;
+            align-self: center;
+        }
+        
+        .close-modal { color: #2e7d32; float: right; cursor: pointer; font-size: 1.5rem; }
+
+        .no-data { text-align: center; padding: 40px; color: #81c784; background: #f1f8e9; border-radius: 28px; }
+        .success-message { background: #2e7d32; color: white; border-radius: 30px; padding: 14px; text-align: center; margin:10px 0; animation: slideIn 0.3s, fadeOut 3s forwards; }
+        .error-message { background: #d32f2f; color: white; border-radius: 30px; padding: 14px; text-align: center; margin:10px 0; animation: slideIn 0.3s, fadeOut 3s forwards; }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div class="mobile-container">
+    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span id="logoutText">Logout</span></button>
+    
+    <div id="loginSection" class="login-container">
+        <div class="login-card">
+            <img src="https://i.postimg.cc/gjYJbrGp/logo.png" 
+                     alt="School Logo" 
+                     class="logo-img"
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'140\' height=\'140\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'60\' text-anchor=\'middle\' fill=\'%232e7d32\' font-family=\'Arial\'%3E🏫%3C/text%3E%3C/svg%3E'">
+            <div class="school-name-urdu" style="font-size: 1.8rem; margin-bottom: 20px;">گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین</div>
+            <div class="lang-switcher" style="margin: 10px 0 20px;">
+                <button class="lang-btn" id="loginBtnEnglish"><i class="fas fa-globe"></i> English</button>
+                <button class="lang-btn active" id="loginBtnUrdu"><i class="fas fa-globe"></i> اردو</button>
+            </div>
+            <h2 class="login-title" id="loginTitle"><i class="fas fa-lock"></i> <span id="loginTitleText">Login</span></h2>
+            <div id="loginError" class="error-message"></div>
+            <div id="loginSuccess" class="success-message"></div>
+            <form id="loginForm">
+                <div class="login-form-group">
+                    <label id="emailLabel" for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="login-form-group">
+                    <label id="passwordLabel" for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn login-btn-primary" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> <span id="loginBtnText">Login</span>
+                </button>
+            </form>
+            <div class="login-footer">
+                <a href="#" id="forgotPassword">Forgot Password?</a>
+            </div>
+            <div class="login-divider">
+                <span id="orText">OR</span>
+            </div>
+            <button class="login-btn login-btn-primary" id="guestLoginBtn" style="background: #004225;">
+                <i class="fas fa-user"></i> <span id="guestLoginText">Continue as Guest</span>
+            </button>
+            <div class="login-footer" style="margin-top: 15px;">
+                <span id="noAccountText">Don't have an account?</span> <a href="#" id="contactAdmin">Contact Admin</a>
+            </div>
+        </div>
+    </div>
+    
+    <div id="mainContent" class="main-content">
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://i.postimg.cc/gjYJbrGp/logo.png" 
+                     alt="School Logo" 
+                     class="logo-img"
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'140\' height=\'140\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'60\' text-anchor=\'middle\' fill=\'%232e7d32\' font-family=\'Arial\'%3E🏫%3C/text%3E%3C/svg%3E'">
+            </div>
+            <div class="header-text">
+                <div class="school-name-urdu" id="schoolNameUrdu">گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین</div>
+            </div>
+            <div class="estd-badge" id="estdBadge"> Since 1890 • پشین</div>
+        </div>
+        
+        <div class="lang-switcher">
+            <button class="lang-btn" id="btnEnglish"><i class="fas fa-globe"></i> English</button>
+            <button class="lang-btn active" id="btnUrdu"><i class="fas fa-globe"></i> اردو</button>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number" id="totalStudents">0</div>
+                <div class="stat-label" id="totalLabel">Total Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalClasses">0</div>
+                <div class="stat-label" id="classesLabel">Classes</div>
+            </div>
+            <div class="stat-card" id="rotatingClassCard">
+                <div class="stat-number" id="rotatingClassCount">0</div>
+                <div class="stat-label" id="rotatingClassName">کچی</div>
+            </div>
+        </div>
+        
+        <div class="tab-bar">
+            <button class="tab active" data-tab="add"><i class="fas fa-plus-circle"></i> <span class="tab-text" id="tabAddText">Add Student</span></button>
+            <button class="tab" data-tab="list"><i class="fas fa-list-alt"></i> <span class="tab-text" id="tabListText">Records</span></button>
+        </div>
+        
+        <div id="addPanel" class="panel active">
+            <div id="messageContainer"></div>
+            <div class="photo-area">
+                <div class="photo-preview" id="photoPreview">
+                    <img id="defaultPhotoLogo" src="https://i.postimg.cc/gjYJbrGp/logo.png" 
+                         onerror="this.style.display='none'; document.getElementById('userIcon').style.display='block';"
+                         style="width:100%; height:100%; object-fit:cover;">
+                    <i class="fas fa-user-graduate" id="userIcon" style="display: none;"></i>
+                    <img id="studentPhoto" class="hidden">
+                </div>
+                <div class="photo-options">
+                    <button class="photo-btn camera-btn" id="cameraBtn"><i class="fas fa-camera"></i> Use Camera</button>
+                    <button class="photo-btn gallery-btn" id="galleryBtn"><i class="fas fa-images"></i> Choose from Gallery</button>
+                </div>
+                <input type="file" id="photoInput" accept="image/*" capture="environment" hidden>
+                <input type="file" id="galleryInput" accept="image/*" hidden>
+            </div>
+            <div class="photo-hint" id="photoHint"><i class="fas fa-info-circle"></i> Photo will be cropped and uploaded</div>
+            
+            <form id="studentForm">
+                <input type="text" id="admNo" placeholder="Admission No" required class="form-group" inputmode="numeric" pattern="[0-9]*">
+                
+                <div class="form-row">
+                    <input type="text" id="name" placeholder="Student Name" required lang="ur" inputmode="text">
+                    
+                    <select id="class" required>
+                        <option value="" id="selectClassOption">Select Class</option>
+                        <option value="کچی">کچی</option>
+                        <option value="پکی">پکی</option>
+                        <option value="دوئم">دوئم</option>
+                        <option value="سوئم">سوئم</option>
+                        <option value="چہارم">چہارم</option>
+                        <option value="پنجم">پنجم</option>
+                        <option value="ششم">ششم</option>
+                        <option value="ہفتم">ہفتم</option>
+                        <option value="ہشتم">ہشتم</option>
+                        <option value="نہم">نہم</option>
+                        <option value="دہم">دہم</option>
+                        <option value="فرسٹ ائیر"> فرسٹ ائیر </option>
+                        <option value="سیکنڈ ائیر">سکینڈ ائیر</option>
+                    </select>
+                </div>
+                
+                <input type="text" id="fatherName" placeholder="Father's Name" required class="form-group" lang="ur" inputmode="text">
+                <input type="text" id="caste" placeholder="Caste/Tribe" required class="form-group" lang="ur" inputmode="text">
+                <input type="tel" id="phone" placeholder="Phone Number" required class="form-group">
+                
+                <div class="form-row">
+                    <input type="date" id="dob" required>
+                    <input type="date" id="admissionDate" required> 
+                </div>
+                <input type="text" id="dobInWords" placeholder="Date of Birth in Words" readonly class="form-group" style="background-color: #f9fff9;">
+                
+                <button type="submit" class="btn btn-primary" id="saveBtn"><i class="fas fa-save"></i> Save to Firebase</button>
+                <button type="button" class="btn btn-success hidden" id="updateBtn"><i class="fas fa-edit"></i> Update Record</button>
+            </form>
+        </div>
+        
+        <div id="listPanel" class="panel">
+            <div class="search-export">
+                <input type="text" id="searchInput" placeholder="🔍 Search students...">
+                <button class="btn btn-success" id="exportExcelBtn"><i class="fas fa-file-excel"></i> Excel</button>
+            </div>
+            <div class="status-filter" id="statusFilter">
+                <button class="status-btn active" data-status="current">موجودہ</button>
+                <button class="status-btn" data-status="all">تمام</button>
+                <button class="status-btn" data-status="left">سابقہ</button>
+            </div>
+            <div class="class-filter-section">
+                <div class="class-filter-title">
+                    <span><i class="fas fa-filter"></i> <span id="filterTitle">Filter by Class</span></span>
+                    <button class="btn btn-info" id="clearFilterBtn" style="width: auto; padding: 6px 15px; margin: 0;"><i class="fas fa-times"></i> <span id="clearFilterText">Clear</span></button>
+                </div>
+                <div class="class-filter-badges" id="classFilterBadges"></div>
+            </div>
+            <div class="class-stats" id="classStats"></div>
+            <div id="studentList"></div>
+        </div>
+    </div>
+    
+    <div class="bottom-nav" id="bottomNav" style="display: none;">
+        <div class="nav-item active" data-nav="add"><i class="fas fa-home"></i><span class="nav-text" id="navHomeText">Home</span></div>
+        <div class="nav-item" data-nav="list"><i class="fas fa-users"></i><span class="nav-text" id="navStudentsText">Students</span></div>
+    </div>
+</div>
+
+<div id="cropperModal" class="cropper-modal">
+    <div class="cropper-container">
+        <h3 style="margin-bottom: 15px; text-align: center;">Crop Photo</h3>
+        <div class="cropper-box">
+            <img id="cropperImage" src="">
+        </div>
+        <div class="cropper-actions" style="display: flex; gap: 10px;">
+            <button class="crop-btn" id="cropBtn"><i class="fas fa-crop"></i> Crop & Save</button>
+            <button class="cancel-btn" id="cancelCropBtn"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="certificateModal" class="certificate-modal">
+    <div class="certificate-content">
+        <span class="close-modal" id="closeModal"><i class="fas fa-times"></i></span>
+        <div id="certificateContent"></div>
+        <button class="btn btn-primary" id="printCertificate"><i class="fas fa-print"></i> Print Certificate</button>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAiyuiOWNROyhP0ygKIULfP4jcX9tzjn28",
+        authDomain: "model-2da2e.firebaseapp.com",
+        databaseURL: "https://model-2da2e-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "model-2da2e",
+        storageBucket: "model-2da2e.firebasestorage.app",
+        messagingSenderId: "704044403504",
+        appId: "1:704044403504:web:1e234c58ab9fc4a8bbd6f5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    const storage = firebase.storage();
+    const studentsRef = db.ref('students');
+    const counterRef = db.ref('counter');
+
+    const e = (id) => document.getElementById(id);
+    
+    let students = [];
+    let currentId = null;
+    let isUrdu = true;
+    let isSubmitting = false;
+    let selectedClass = 'all';
+    let selectedStatus = 'current';
+    let cropper = null;
+    let currentUser = null;
+
+    let lastSelectedClass = '';
+
+    const classList = ['کچی','پکی','دوئم','سوئم','چہارم','پنجم','ششم','ہفتم','ہشتم','نہم','دہم','فرسٹ ائیر','سیکنڈ ائیر'];
+
+    let currentClassIndex = 0;
+    let rotationInterval;
+
+    let currentPhotoBlob = null;
+
+    const translations = {
+        en: { 
+            schoolName:"گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین", 
+            estd:"📅 Since 1890 • پشین", 
+            total:"Total Students", 
+            classes:"Classes", 
+            add:"Add Student", 
+            records:"Records", 
+            admNo:"Admission No", 
+            studentName:"Student Name", 
+            selectClass:"Select Class", 
+            fatherName:"Father's Name",
+            caste:"Caste/Tribe",
+            phone:"Phone Number", 
+            save:"Save to Firebase", 
+            update:"Update Record", 
+            search:"🔍 Search students...", 
+            home:"Home", 
+            students:"Students", 
+            print:"Print", 
+            share:"Share",
+            edit:"Edit", 
+            delete:"Delete", 
+            pass:"Pass", 
+            fail:"Fail",
+            left:"Left School",
+            current:"Current",
+            all:"All",
+            leftStatus:"Left",
+            certificate:"Certificate of Enrollment", 
+            thermalTitle:"تصدیقی سرٹیفیکٹ",
+            issuedDate:"Issue Date", 
+            principal:"Principal", 
+            class:"Class", 
+            admNoLabel:"Admission No", 
+            fatherNameLabel:"Father's Name",
+            casteLabel:"Caste/Tribe",
+            phoneLabel:"Phone", 
+            dobLabel:"Date of Birth", 
+            dobInWordsLabel:"Date of Birth in Words",
+            admissionDateLabel:"Admission Date", 
+            saving:"Saving...", 
+            updating:"Updating...", 
+            uploading:"Uploading photo...",
+            saved:"✅ Data saved successfully!", 
+            updated:"✅ Record updated successfully!", 
+            fillAllFields:"Please fill all required fields", 
+            photoHint:"📸 Choose camera or gallery - Photo will be cropped", 
+            filterTitle:"Filter by Class", 
+            allClasses:"All Classes", 
+            noStudents:"No students found", 
+            clearFilter:"Clear",
+            duplicateAdmNo:"❌ Admission number already exists. Please use a different number.",
+            loginTitle:"Login",
+            emailLabel:"Email Address",
+            passwordLabel:"Password",
+            loginBtn:"Login",
+            forgotPassword:"Forgot Password?",
+            orText:"OR",
+            guestLogin:"Continue as Guest",
+            noAccount:"Don't have an account?",
+            contactAdmin:"Contact Admin",
+            logout:"Logout",
+            loginSuccess:"Login successful! Redirecting...",
+            loginError:"Invalid email or password",
+            guestMode:"Guest Mode - Limited Access",
+            emailRequired:"Please enter your email",
+            passwordRequired:"Please enter your password",
+            promoteConfirmPass:"Are you sure you want to mark this student as PASS and promote to next class?",
+            promoteConfirmFail:"Are you sure you want to mark this student as FAIL? (Class will remain same)",
+            maxClass:"This student is already in the highest class.",
+            leftConfirm:"Are you sure you want to mark this student as LEFT SCHOOL? (They will be moved to left records)",
+            alreadyLeft:"This student has already left school.",
+            classNotFound:"Student's class is not recognized. Cannot promote."
+        },
+        ur: { 
+            schoolName:"گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین", 
+            estd:"📅 1890ء سے • پشین", 
+            total:"کل طلباء", 
+            classes:"کلاسز", 
+            add:"اندراج", 
+            records:"ریکارڈ", 
+            admNo:"داخلہ نمبر", 
+            studentName:"طالب علم کا نام", 
+            selectClass:"کلاس منتخب کریں", 
+            fatherName:"والد کا نام",
+            caste:"قوم / ذات",
+            phone:"فون نمبر", 
+            save:"محفوظ کریں", 
+            update:"اپ ڈیٹ کریں", 
+            search:"🔍 تلاش کریں...", 
+            home:"ہوم", 
+            students:"طلباء", 
+            print:"پرنٹ", 
+            share:"شیئر",
+            edit:"ترمیم", 
+            delete:"حذف", 
+            pass:"پاس", 
+            fail:"فیل",
+            left:"سکول چھوڑ دیا",
+            current:"موجودہ",
+            all:"تمام",
+            leftStatus:"سابقہ",
+            certificate:"داخلہ سرٹیفکیٹ", 
+            thermalTitle:"تصدیقی سرٹیفیکٹ",
+            issuedDate:"تاریخ اجراء", 
+            principal:"پرنسپل", 
+            class:"کلاس", 
+            admNoLabel:"داخلہ نمبر", 
+            fatherNameLabel:"والد کا نام",
+            casteLabel:"قوم / ذات",
+            phoneLabel:"فون نمبر", 
+            dobLabel:"تاریخ پیدائش", 
+            dobInWordsLabel:"تاریخ پیدائش الفاظ میں",
+            admissionDateLabel:"تاریخ داخلہ", 
+            saving:"محفوظ ہو رہا ہے...", 
+            updating:"اپ ڈیٹ ہو رہا ہے...", 
+            uploading:"تصویر اپ لوڈ ہو رہی ہے...",
+            saved:"✅ ڈیٹا کامیابی سے محفوظ ہو گیا!", 
+            updated:"✅ ریکارڈ کامیابی سے اپ ڈیٹ ہو گیا!", 
+            fillAllFields:"براہ کرم تمام فیلڈز بھریں", 
+            photoHint:"📸 کیمرہ یا گیلری سے انتخاب کریں - تصویر کٹے گی", 
+            filterTitle:"کلاس کے مطابق فلٹر کریں", 
+            allClasses:"تمام کلاسیں", 
+            noStudents:"کوئی طالب علم نہیں ملا", 
+            clearFilter:"صاف کریں",
+            duplicateAdmNo:"❌ داخلہ نمبر پہلے سے موجود ہے۔ براہ کرم دوسرا نمبر استعمال کریں۔",
+            loginTitle:"لاگ ان",
+            emailLabel:"ای میل ایڈریس",
+            passwordLabel:"پاس ورڈ",
+            loginBtn:"لاگ ان",
+            forgotPassword:"پاس ورڈ بھول گئے؟",
+            orText:"یا",
+            guestLogin:"بطور مہمان جاری رکھیں",
+            noAccount:"اکاؤنٹ نہیں ہے؟",
+            contactAdmin:"ایڈمن سے رابطہ کریں",
+            logout:"لاگ آؤٹ",
+            loginSuccess:"لاگ ان کامیاب! ری ڈائریکٹ ہو رہا ہے...",
+            loginError:"غلط ای میل یا پاس ورڈ",
+            guestMode:"مہمان موڈ - محدود رسائی",
+            emailRequired:"براہ کرم اپنا ای میل درج کریں",
+            passwordRequired:"براہ کرم اپنا پاس ورڈ درج کریں",
+            promoteConfirmPass:"کیا آپ اس طالب علم کو پاس کر کے اگلی کلاس میں بھیجنا چاہتے ہیں؟",
+            promoteConfirmFail:"کیا آپ اس طالب علم کو فیل قرار دینا چاہتے ہیں؟ (کلاس وہی رہے گی)",
+            maxClass:"یہ طالب علم پہلے ہی آخری کلاس میں ہے۔",
+            leftConfirm:"کیا آپ اس طالب علم کو سکول چھوڑنے والا قرار دینا چاہتے ہیں؟ (یہ سابقہ طلباء میں شامل ہو جائے گا)",
+            alreadyLeft:"یہ طالب علم پہلے ہی سکول چھوڑ چکا ہے۔",
+            classNotFound:"طالب علم کی کلاس تسلیم نہیں ہوئی۔ پاس نہیں کیا جا سکتا۔"
+        }
+    };
+
+    function showLogin() {
+        e('loginSection').style.display = 'flex';
+        e('mainContent').style.display = 'none';
+        e('bottomNav').style.display = 'none';
+        e('logoutBtn').style.display = 'none';
+    }
+    
+    function showMainContent(user) {
+        currentUser = user;
+        e('loginSection').style.display = 'none';
+        e('mainContent').style.display = 'block';
+        e('bottomNav').style.display = 'flex';
+        e('logoutBtn').style.display = 'block';
+        setAutoAdmissionDate();
+        if (user && user.isAnonymous) {
+            showMessage(translations[isUrdu ? 'ur' : 'en'].guestMode, true);
+        }
+        startRotation();
+    }
+    
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            showMainContent(user);
+        } else {
+            showLogin();
+            if (rotationInterval) clearInterval(rotationInterval);
+        }
+    });
+    
+    e('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const email = e('email').value.trim();
+        const password = e('password').value;
+        const t = translations[isUrdu ? 'ur' : 'en'];
+        if (!email) { showLoginError(t.emailRequired); return; }
+        if (!password) { showLoginError(t.passwordRequired); return; }
+        e('loginBtn').disabled = true;
+        e('loginBtn').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.loginBtn}`;
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            showLoginSuccess(t.loginSuccess);
+        } catch (error) {
+            showLoginError(t.loginError);
+            e('loginBtn').disabled = false;
+            e('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t.loginBtn}`;
+        }
+    });
+    
+    e('guestLoginBtn').addEventListener('click', async () => {
+        const t = translations[isUrdu ? 'ur' : 'en'];
+        e('guestLoginBtn').disabled = true;
+        e('guestLoginBtn').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.guestLogin}`;
+        try {
+            await auth.signInAnonymously();
+            showLoginSuccess(t.guestMode);
+        } catch (error) {
+            showLoginError('Guest login failed');
+            e('guestLoginBtn').disabled = false;
+            e('guestLoginBtn').innerHTML = `<i class="fas fa-user"></i> ${t.guestLogin}`;
+        }
+    });
+    
+    e('logoutBtn').addEventListener('click', async () => {
+        try { await auth.signOut(); } catch (error) { console.error('Logout error:', error); }
+    });
+    
+    e('forgotPassword').addEventListener('click', (e) => {
+        e.preventDefault();
+        const email = prompt(isUrdu ? 'اپنا ای میل ایڈریس درج کریں:' : 'Enter your email address:');
+        if (email) {
+            auth.sendPasswordResetEmail(email)
+                .then(() => alert(isUrdu ? 'پاس ورڈ ری سیٹ ای میل بھیج دیا گیا ہے' : 'Password reset email sent'))
+                .catch((error) => alert(isUrdu ? 'غلطی: ' + error.message : 'Error: ' + error.message));
+        }
+    });
+    
+    e('contactAdmin').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert(isUrdu ? 'براہ کرم ایڈمن سے رابطہ کریں: admin@gmhss.edu.pk' : 'Please contact admin: admin@gmhss.edu.pk');
+    });
+    
+    function showLoginError(message) {
+        e('loginError').style.display = 'block';
+        e('loginError').textContent = message;
+        e('loginSuccess').style.display = 'none';
+    }
+    
+    function showLoginSuccess(message) {
+        e('loginSuccess').style.display = 'block';
+        e('loginSuccess').textContent = message;
+        e('loginError').style.display = 'none';
+    }
+
+    function setLanguage(lang) {
+        const t = translations[lang];
+        if (e('loginTitleText')) e('loginTitleText').textContent = t.loginTitle;
+        if (e('emailLabel')) e('emailLabel').textContent = t.emailLabel;
+        if (e('passwordLabel')) e('passwordLabel').textContent = t.passwordLabel;
+        if (e('loginBtnText')) e('loginBtnText').textContent = t.loginBtn;
+        if (e('forgotPassword')) e('forgotPassword').textContent = t.forgotPassword;
+        if (e('orText')) e('orText').textContent = t.orText;
+        if (e('guestLoginText')) e('guestLoginText').textContent = t.guestLogin;
+        if (e('noAccountText')) e('noAccountText').textContent = t.noAccount;
+        if (e('contactAdmin')) e('contactAdmin').textContent = t.contactAdmin;
+        if (e('logoutText')) e('logoutText').textContent = t.logout;
+        if (e('schoolNameUrdu')) e('schoolNameUrdu').textContent = t.schoolName;
+        if (e('estdBadge')) e('estdBadge').innerHTML = t.estd;
+        if (e('totalLabel')) e('totalLabel').textContent = t.total;
+        if (e('classesLabel')) e('classesLabel').textContent = t.classes;
+        if (e('tabAddText')) e('tabAddText').textContent = t.add;
+        if (e('tabListText')) e('tabListText').textContent = t.records;
+        if (e('admNo')) e('admNo').placeholder = t.admNo;
+        if (e('name')) e('name').placeholder = t.studentName;
+        if (e('fatherName')) e('fatherName').placeholder = t.fatherName;
+        if (e('caste')) e('caste').placeholder = t.caste;
+        if (e('phone')) e('phone').placeholder = t.phone;
+        if (e('dobInWords')) e('dobInWords').placeholder = t.dobInWordsLabel;
+        if (e('saveBtn')) e('saveBtn').innerHTML = `<i class="fas fa-save"></i> ${t.save}`;
+        if (e('updateBtn')) e('updateBtn').innerHTML = `<i class="fas fa-edit"></i> ${t.update}`;
+        if (e('searchInput')) e('searchInput').placeholder = t.search;
+        if (e('navHomeText')) e('navHomeText').textContent = t.home;
+        if (e('navStudentsText')) e('navStudentsText').textContent = t.students;
+        if (e('photoHint')) e('photoHint').innerHTML = `<i class="fas fa-info-circle"></i> ${t.photoHint}`;
+        if (e('filterTitle')) e('filterTitle').innerHTML = `<i class="fas fa-filter"></i> ${t.filterTitle}`;
+        if (e('clearFilterText')) e('clearFilterText').textContent = t.clearFilter;
+        
+        const statusBtns = document.querySelectorAll('.status-btn');
+        if (statusBtns.length >= 3) {
+            statusBtns[0].textContent = t.current;
+            statusBtns[1].textContent = t.all;
+            statusBtns[2].textContent = t.leftStatus;
+        }
+        
+        const selectClassOption = document.querySelector('#class option[value=""]');
+        if (selectClassOption) selectClassOption.textContent = t.selectClass;
+        
+        if (lang === 'ur') {
+            document.body.classList.add('urdu-mode');
+            document.body.classList.add('urdu-text');
+        } else {
+            document.body.classList.remove('urdu-mode');
+            document.body.classList.remove('urdu-text');
+        }
+        
+        renderClassFilter(); 
+        renderList();
+        updateRotatingCard();
+    }
+
+    e('loginBtnEnglish').addEventListener('click', () => { 
+        isUrdu = false; 
+        setLanguage('en'); 
+        e('loginBtnEnglish').classList.add('active'); 
+        e('loginBtnUrdu').classList.remove('active'); 
+        e('btnEnglish').classList.add('active'); 
+        e('btnUrdu').classList.remove('active'); 
+    });
+    
+    e('loginBtnUrdu').addEventListener('click', () => { 
+        isUrdu = true; 
+        setLanguage('ur'); 
+        e('loginBtnUrdu').classList.add('active'); 
+        e('loginBtnEnglish').classList.remove('active'); 
+        e('btnUrdu').classList.add('active'); 
+        e('btnEnglish').classList.remove('active'); 
+    });
+
+    e('btnEnglish').addEventListener('click', () => { 
+        isUrdu = false; 
+        setLanguage('en'); 
+        e('btnEnglish').classList.add('active'); 
+        e('btnUrdu').classList.remove('active'); 
+        e('loginBtnEnglish').classList.add('active'); 
+        e('loginBtnUrdu').classList.remove('active'); 
+    });
+    
+    e('btnUrdu').addEventListener('click', () => { 
+        isUrdu = true; 
+        setLanguage('ur'); 
+        e('btnUrdu').classList.add('active'); 
+        e('btnEnglish').classList.remove('active'); 
+        e('loginBtnUrdu').classList.add('active'); 
+        e('loginBtnEnglish').classList.remove('active'); 
+    });
+
+    document.querySelectorAll('.status-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedStatus = this.dataset.status;
+            renderList();
+        });
+    });
+
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return dateString;
+    }
+
+    function dateToWords(dateString) {
+        if (!dateString) return '';
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const urduMonths = ['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر'];
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return '';
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        if (isNaN(year) || isNaN(month) || isNaN(day)) return '';
+        if (isUrdu) {
+            return `${convertToUrduWords(day)} ${urduMonths[month]} ${convertYearToUrduWords(year)}`;
+        } else {
+            const dayWord = getOrdinalWord(day);
+            const monthWord = months[month];
+            const yearWord = convertYearToWords(year);
+            return `${dayWord} ${monthWord} ${yearWord}`;
+        }
+    }
+    
+    function getOrdinalWord(num) {
+        const ordinals = ['First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth','Eleventh','Twelfth','Thirteenth','Fourteenth','Fifteenth','Sixteenth','Seventeenth','Eighteenth','Nineteenth','Twentieth','Twenty-First','Twenty-Second','Twenty-Third','Twenty-Fourth','Twenty-Fifth','Twenty-Sixth','Twenty-Seventh','Twenty-Eighth','Twenty-Ninth','Thirtieth','Thirty-First'];
+        return ordinals[num - 1] || num.toString();
+    }
+    
+    function convertYearToWords(year) {
+        if (year < 1000) return year.toString();
+        const thousands = Math.floor(year / 1000);
+        const remainder = year % 1000;
+        if (remainder === 0) {
+            return numberToWords(thousands) + ' Thousand';
+        } else if (remainder < 100) {
+            return numberToWords(thousands) + ' Thousand ' + numberToWords(remainder);
+        } else {
+            const hundreds = Math.floor(remainder / 100);
+            const tens = remainder % 100;
+            if (tens === 0) {
+                return numberToWords(thousands) + ' Thousand ' + numberToWords(hundreds) + ' Hundred';
+            } else {
+                return numberToWords(thousands) + ' Thousand ' + numberToWords(hundreds) + ' Hundred ' + numberToWords(tens);
+            }
+        }
+    }
+    
+    function numberToWords(num) {
+        const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+        const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+        if (num < 20) return ones[num];
+        if (num < 100) {
+            return tens[Math.floor(num / 10)] + (num % 10 ? ' ' + ones[num % 10] : '');
+        }
+        return num.toString();
+    }
+    
+    function convertToUrduWords(num) {
+        const urduNumbers = ['صفر','ایک','دو','تین','چار','پانچ','چھ','سات','آٹھ','نو','دس','گیارہ','بارہ','تیرہ','چودہ','پندرہ','سولہ','سترہ','اٹھارہ','انیس','بیس','اکیس','بائیس','تئیس','چوبیس','پچیس','چھبیس','ستائیس','اٹھائیس','انتیس','تیس','اکتیس'];
+        return urduNumbers[num] || num.toString();
+    }
+    
+    function convertYearToUrduWords(year) {
+        if (year < 1000) {
+            return convertToUrduWords(year);
+        }
+        if (year >= 1000 && year < 2000) {
+            let hundreds = Math.floor(year / 100);
+            let remainder = year % 100;
+            if (hundreds === 10) {
+                return 'ایک ہزار' + (remainder ? ' ' + convertToUrduWords(remainder) : '');
+            } else {
+                let hundredsWord = convertToUrduWords(hundreds) + ' سو';
+                if (remainder === 0) {
+                    return hundredsWord;
+                } else {
+                    return hundredsWord + ' ' + convertToUrduWords(remainder);
+                }
+            }
+        }
+        const thousands = Math.floor(year / 1000);
+        const remainder = year % 1000;
+        let thousandsWord;
+        if (thousands === 1) {
+            thousandsWord = 'ایک ہزار';
+        } else if (thousands === 2) {
+            thousandsWord = 'دو ہزار';
+        } else {
+            thousandsWord = convertToUrduWords(thousands) + ' ہزار';
+        }
+        if (remainder === 0) {
+            return thousandsWord;
+        }
+        if (remainder < 100) {
+            return thousandsWord + ' ' + convertToUrduWords(remainder);
+        } else {
+            let hundreds = Math.floor(remainder / 100);
+            let tens = remainder % 100;
+            let hundredsWord;
+            if (hundreds === 1) {
+                hundredsWord = 'ایک سو';
+            } else {
+                hundredsWord = convertToUrduWords(hundreds) + ' سو';
+            }
+            if (tens === 0) {
+                return thousandsWord + ' ' + hundredsWord;
+            } else {
+                return thousandsWord + ' ' + hundredsWord + ' ' + convertToUrduWords(tens);
+            }
+        }
+    }
+
+    e('dob').addEventListener('change', function() {
+        e('dobInWords').value = dateToWords(this.value);
+    });
+
+    e('cameraBtn').addEventListener('click', () => { e('photoInput').setAttribute('capture','environment'); e('photoInput').click(); });
+    e('galleryBtn').addEventListener('click', () => { e('galleryInput').removeAttribute('capture'); e('galleryInput').click(); });
+    
+    function handleFileSelect(file) { if(file) { const reader = new FileReader(); reader.onload = (e) => showCropper(e.target.result); reader.readAsDataURL(file); } }
+    e('photoInput').addEventListener('change', (e) => { handleFileSelect(e.target.files[0]); e.target.value = ''; });
+    e('galleryInput').addEventListener('change', (e) => { handleFileSelect(e.target.files[0]); e.target.value = ''; });
+    
+    function showCropper(src) { 
+        e('cropperModal').style.display = 'flex'; 
+        e('cropperImage').src = src; 
+        if (cropper) cropper.destroy(); 
+        cropper = new Cropper(e('cropperImage'), { aspectRatio: 3/4, viewMode: 1, dragMode: 'move', autoCropArea: 1, cropBoxMovable: true, cropBoxResizable: true, background: false }); 
+    }
+    
+    e('cropBtn').addEventListener('click', () => { 
+        if (cropper) { 
+            const canvas = cropper.getCroppedCanvas({ width: 300, height: 400 }); 
+            canvas.toBlob((blob) => {
+                currentPhotoBlob = blob;
+                e('studentPhoto').src = canvas.toDataURL('image/jpeg');
+                e('defaultPhotoLogo').classList.add('hidden');
+                e('studentPhoto').classList.remove('hidden'); 
+                e('userIcon').classList.add('hidden'); 
+                e('cropperModal').style.display = 'none'; 
+                cropper.destroy(); cropper = null;
+            }, 'image/jpeg', 0.9);
+        }
+    });
+    
+    e('cancelCropBtn').addEventListener('click', () => { e('cropperModal').style.display = 'none'; if(cropper) { cropper.destroy(); cropper = null; } });
+
+    async function uploadPhoto(studentId, blob) {
+        if (!blob) return null;
+        const t = translations[isUrdu ? 'ur' : 'en'];
+        const fileName = `students/${studentId}_${Date.now()}.jpg`;
+        const storageRef = storage.ref().child(fileName);
+        showMessage(t.uploading, true);
+        try {
+            const snapshot = await storageRef.put(blob);
+            const downloadURL = await snapshot.ref.getDownloadURL();
+            return downloadURL;
+        } catch (error) {
+            console.error('Upload error:', error);
+            showMessage('Upload failed: ' + error.message, false);
+            return null;
+        }
+    }
+
+    function getClassCounts() { 
+        const counts = {}; 
+        classList.forEach(cls => counts[cls] = 0); 
+        students.forEach(s => { 
+            if (s.active !== false && s.class && counts.hasOwnProperty(s.class)) counts[s.class]++; 
+        }); 
+        return counts; 
+    }
+    
+    function renderClassFilter() { 
+        const t = translations[isUrdu ? 'ur' : 'en']; 
+        const counts = getClassCounts(); 
+        let html = `<div class="class-badge all-classes ${selectedClass === 'all' ? 'active' : ''}" onclick="filterByClass('all')"><i class="fas fa-users"></i> ${t.allClasses} <span class="count">${students.filter(s => s.active !== false).length}</span></div>`;
+        classList.forEach(cls => { const count = counts[cls] || 0; if (count > 0 || selectedClass === cls) html += `<div class="class-badge ${selectedClass === cls ? 'active' : ''}" onclick="filterByClass('${cls}')">${cls} <span class="count">${count}</span></div>`; });
+        e('classFilterBadges').innerHTML = html;
+        let statsHtml = classList.map(cls => { const count = counts[cls] || 0; return count > 0 ? `<div class="class-stat-item"><div class="class-name">${cls}</div><div class="class-count">${count}</div></div>` : ''; }).join('');
+        e('classStats').innerHTML = statsHtml || '<div class="no-data">📊 No students</div>';
+    }
+    
+    window.filterByClass = (className) => { selectedClass = className; renderClassFilter(); renderList(); };
+    e('clearFilterBtn').onclick = () => { selectedClass = 'all'; renderClassFilter(); renderList(); };
+
+    studentsRef.on('value', (snapshot) => { 
+        const data = snapshot.val(); 
+        students = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : []; 
+        students.forEach(s => { if (s.active === undefined) s.active = true; });
+        updateStats(); 
+        renderClassFilter(); 
+        renderList();
+        updateRotatingCard();
+    });
+    
+    function updateStats() { 
+        const activeStudents = students.filter(s => s.active !== false);
+        e('totalStudents').textContent = activeStudents.length; 
+        const uniqueClasses = new Set(activeStudents.map(s => s.class).filter(Boolean)); 
+        e('totalClasses').textContent = uniqueClasses.size; 
+    }
+    
+    function showMessage(msg, ok = true) { 
+        const div = document.createElement('div'); 
+        div.className = ok ? 'success-message' : 'error-message'; 
+        div.innerHTML = msg; 
+        e('messageContainer').innerHTML = ''; 
+        e('messageContainer').appendChild(div); 
+        setTimeout(() => { if(div.parentNode) div.remove(); }, 3000); 
+    }
+    
+    function setAutoAdmissionDate() { e('admissionDate').value = new Date().toISOString().split('T')[0]; }
+
+    function startRotation() {
+        if (rotationInterval) clearInterval(rotationInterval);
+        rotationInterval = setInterval(() => {
+            e('rotatingClassCount').classList.add('fade-out');
+            e('rotatingClassName').classList.add('fade-out');
+            setTimeout(() => {
+                currentClassIndex = (currentClassIndex + 1) % classList.length;
+                updateRotatingCard();
+                e('rotatingClassCount').classList.remove('fade-out');
+                e('rotatingClassName').classList.remove('fade-out');
+            }, 300);
+        }, 3000);
+    }
+
+    function updateRotatingCard() {
+        const className = classList[currentClassIndex];
+        const counts = getClassCounts();
+        e('rotatingClassCount').textContent = counts[className] || 0;
+        e('rotatingClassName').textContent = className;
+    }
+
+    function isDuplicateAdmissionNo(admNo, excludeId = null) {
+        return students.some(s => s.admNo === admNo && (excludeId === null || s.id !== excludeId));
+    }
+
+    window.promoteStudent = async (id, passed) => {
+        const student = students.find(s => s.id === id);
+        if (!student) { showMessage("Student not found", false); return; }
+        if (student.active === false) { showMessage("Cannot promote a student who has left school.", false); return; }
+
+        const t = translations[isUrdu ? 'ur' : 'en'];
+        const currentClass = student.class;
+        const classIndex = classList.indexOf(currentClass);
+        
+        if (classIndex === -1) { showMessage(t.classNotFound, false); return; }
+        
+        if (passed) {
+            if (classIndex === classList.length - 1) { showMessage(t.maxClass, false); return; }
+            const confirmMsg = t.promoteConfirmPass;
+            if (!confirm(confirmMsg)) return;
+            
+            const newClass = classList[classIndex + 1];
+            try {
+                await studentsRef.child(id).update({ class: newClass, updatedAt: new Date().toISOString() });
+                showMessage(`✅ ${student.name} ${t.pass} -> ${newClass}`, true);
+                renderList();
+            } catch (error) {
+                console.error('Promotion error:', error);
+                showMessage('Error promoting student: ' + error.message, false);
+            }
+        } else {
+            const confirmMsg = t.promoteConfirmFail;
+            if (!confirm(confirmMsg)) return;
+            showMessage(`ℹ️ ${student.name} ${t.fail} (${currentClass})`, true);
+        }
+    };
+
+    window.markLeft = async (id) => {
+        const student = students.find(s => s.id === id);
+        if (!student) return;
+        const t = translations[isUrdu ? 'ur' : 'en'];
+        if (student.active === false) { showMessage(t.alreadyLeft, false); return; }
+        if (!confirm(t.leftConfirm)) return;
+        try {
+            await studentsRef.child(id).update({ active: false, leftDate: new Date().toISOString(), updatedAt: new Date().toISOString() });
+            showMessage(`✅ ${student.name} ${t.left}`, true);
+        } catch (error) { showMessage('Error marking left', false); }
+    };
+
+    function resetForm() { 
+        e('studentForm').reset(); 
+        e('defaultPhotoLogo').classList.remove('hidden');
+        e('studentPhoto').classList.add('hidden'); 
+        e('userIcon').classList.add('hidden'); 
+        e('studentPhoto').src = ''; 
+        e('dobInWords').value = '';
+        currentId = null; 
+        e('saveBtn').classList.remove('hidden'); 
+        e('updateBtn').classList.add('hidden'); 
+        setAutoAdmissionDate(); 
+        if (lastSelectedClass) e('class').value = lastSelectedClass;
+        currentPhotoBlob = null;
+    }
+
+    window.editStudent = (id) => { 
+        const s = students.find(x => x.id === id); if(!s) return; 
+        currentId = id; 
+        e('admNo').value = s.admNo || ''; 
+        e('name').value = s.name || ''; 
+        e('class').value = s.class || ''; 
+        e('fatherName').value = s.fatherName || ''; 
+        e('caste').value = s.caste || '';
+        e('phone').value = s.phone || ''; 
+        e('dob').value = s.dob || ''; 
+        e('admissionDate').value = s.admissionDate || ''; 
+        e('dobInWords').value = s.dobInWords || dateToWords(s.dob) || '';
+        if (s.photo) { 
+            e('studentPhoto').src = s.photo; 
+            e('studentPhoto').classList.remove('hidden'); 
+            e('defaultPhotoLogo').classList.add('hidden');
+            e('userIcon').classList.add('hidden'); 
+            currentPhotoBlob = null;
+        } else { 
+            e('studentPhoto').classList.add('hidden'); 
+            e('defaultPhotoLogo').classList.remove('hidden');
+            e('userIcon').classList.add('hidden'); 
+            currentPhotoBlob = null;
+        }
+        lastSelectedClass = s.class || '';
+        e('saveBtn').classList.add('hidden'); e('updateBtn').classList.remove('hidden'); 
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
+        e('addPanel').classList.add('active'); 
+        document.querySelector('[data-tab="add"]').classList.add('active');
+        document.querySelector('[data-nav="add"]').classList.add('active');
+        document.querySelector('[data-nav="list"]').classList.remove('active');
+    };
+    
+    window.deleteMe = async (id) => { 
+        if (confirm(isUrdu ? 'کیا آپ اسے حذف کرنا چاہتے ہیں؟' : 'Delete this record?')) { 
+            try { await db.ref('students/' + id).remove(); showMessage(isUrdu ? '✅ حذف کر دیا گیا' : '✅ Deleted successfully'); } 
+            catch (e) { showMessage('Error deleting', false); } 
+        } 
+    };
+    
+    window.printStudent = (id) => { const s = students.find(x => x.id === id); if(s) generateCertificate(s); };
+    
+    // Improved Share Function with QR Code & Auto-Download Fallback
+    window.shareStudent = async (id) => {
+        const s = students.find(x => x.id === id);
+        if(!s) return;
+        const t = translations[isUrdu ? 'ur' : 'en'];
+        const today = formatDate(new Date().toISOString().split('T')[0]);
+        const dobInWords = s.dobInWords || dateToWords(s.dob) || '';
+        
+        // Data for QR Code
+        const qrData = `نام: ${s.name}\nولدیت: ${s.fatherName}\nداخلہ نمبر: ${s.admNo}\nکلاس: ${s.class}\nتاریخ پیدائش: ${formatDate(s.dob)}\nتاریخ داخلہ: ${formatDate(s.admissionDate)}\nفون: ${s.phone}`;
+        
+        const receipt = document.createElement('div');
+        receipt.style.width = '384px';
+        receipt.style.padding = '15px';
+        receipt.style.background = '#ffffff';
+        receipt.style.color = '#000000';
+        receipt.style.fontFamily = "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif";
+        receipt.style.position = 'absolute';
+        receipt.style.top = '-9999px';
+        receipt.style.left = '-9999px';
+        receipt.style.direction = 'rtl';
+        receipt.style.boxSizing = 'border-box';
+        
+        receipt.innerHTML = `
+            <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
+                <h2 style="margin: 0; font-size: 26px; font-weight: bold;">${t.schoolName}</h2>
+                <h3 style="margin: 5px 0 0; font-size: 20px;">${t.thermalTitle}</h3>
+            </div>
+            <div style="font-size: 18px; line-height: 1.6;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 4px 0;"><strong>${t.studentName}:</strong> <span>${s.name}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 4px 0;"><strong>${t.fatherNameLabel}:</strong> <span>${s.fatherName}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 4px 0;"><strong>${t.admNoLabel}:</strong> <span>${s.admNo}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 4px 0;"><strong>${t.class}:</strong> <span>${s.class}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 4px 0;"><strong>${t.dobLabel}:</strong> <span>${formatDate(s.dob)}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 4px 0;"><strong>${t.dobInWordsLabel}:</strong> <span>${dobInWords}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 4px 0;"><strong>${t.admissionDateLabel}:</strong> <span>${formatDate(s.admissionDate)}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 4px 0;"><strong>${t.phoneLabel}:</strong> <span>${s.phone}</span></div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0 4px; font-weight: bold;"><strong>${t.issuedDate}:</strong> <span>${today}</span></div>
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <canvas id="qrCodeCanvas-${s.id}"></canvas>
+            </div>
+        `;
+        
+        document.body.appendChild(receipt);
+        showMessage(isUrdu ? "فائل تیار ہو رہی ہے..." : "Generating file...", true);
+        
+        // Generate QR Code
+        new QRious({
+            element: document.getElementById(`qrCodeCanvas-${s.id}`),
+            value: qrData,
+            size: 150,
+            level: 'H'
+        });
+        
+        // Function to handle downloading file if sharing fails
+        const downloadImage = (blob, filename) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        try {
+            // Give QR code a slight moment to render completely
+            setTimeout(async () => {
+                const canvas = await html2canvas(receipt, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                document.body.removeChild(receipt);
+                
+                canvas.toBlob(async (blob) => {
+                    if (!blob) throw new Error('Canvas to Blob failed');
+                    
+                    const fileName = `Student_${s.admNo}.jpg`;
+                    const file = new File([blob], fileName, { type: 'image/jpeg' });
+                    
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                title: t.thermalTitle,
+                                text: `${t.studentName}: ${s.name}`,
+                                files: [file]
+                            });
+                        } catch(err) {
+                            // If sharing is cancelled or fails, download the image directly
+                            console.log("Share failed or cancelled, falling back to download.", err);
+                            downloadImage(blob, fileName);
+                        }
+                    } else {
+                        // Not supported by browser, download directly
+                        downloadImage(blob, fileName);
+                        showMessage(isUrdu ? "فائل ڈاؤن لوڈ ہو گئی (شیئر کا آپشن سپورٹڈ نہیں ہے)" : "File downloaded (Share not supported)", true);
+                    }
+                }, 'image/jpeg', 0.9);
+            }, 100);
+            
+        } catch (error) {
+            console.error('Share error:', error);
+            if (document.body.contains(receipt)) document.body.removeChild(receipt);
+            showMessage(isUrdu ? "شیئر کرنے میں مسئلہ آیا" : "Error sharing", false);
+        }
+    };
+    
+    function generateCertificate(s) { 
+        const today = formatDate(new Date().toISOString().split('T')[0]);
+        const dobInWords = s.dobInWords || dateToWords(s.dob) || '';
+        const photoHtml = s.photo ? 
+            `<img src="${s.photo}" alt="Student Photo">` : 
+            `<div class="no-photo"><i class="fas fa-user-graduate"></i></div>`;
+        
+        const schoolNameUrdu = "گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین";
+        
+        const html = `
+            <div class="professional-certificate" dir="rtl">
+                <div class="certificate-header">
+                    <img src="https://i.postimg.cc/gjYJbrGp/logo.png" class="certificate-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'60\' text-anchor=\'middle\' fill=\'%232e7d32\' font-family=\'Arial\'%3E🏫%3C/text%3E%3C/svg%3E'">
+                    <div class="certificate-school-name">${schoolNameUrdu}</div>
+                    <div class="certificate-title">سکول چھوڑنے کا سرٹیفکیٹ</div>
+                </div>
+                <div class="certificate-body">
+                    <div class="certificate-details">
+                        <p><strong>نام:</strong> ${s.name}</p>
+                        <p><strong>والد کا نام:</strong> ${s.fatherName}</p>
+                        <p><strong>داخلہ نمبر:</strong> ${s.admNo}</p>
+                        <p><strong>موجودہ کلاس:</strong> ${s.class}</p>
+                        <p><strong>تاریخ پیدائش:</strong> ${formatDate(s.dob)}</p>
+                        <p><strong>تاریخ پیدائش (لفظی):</strong> ${dobInWords}</p>
+                        <p><strong>تاریخ داخلہ:</strong> ${formatDate(s.admissionDate)}</p>
+                        <p><strong>تاریخ اجرا:</strong> ${today}</p>
+                    </div>
+                    <div class="certificate-photo">
+                        ${photoHtml}
+                    </div>
+                </div>
+                <div class="certificate-signatures">
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <div class="signature-label">دستخط (ریکارڈ انچارج)</div>
+                    </div>
+                    <div class="center-school">${schoolNameUrdu}</div>
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <div class="signature-label">دستخط (پرنسپل)</div>
+                    </div>
+                </div>
+            </div>
+        `; 
+        e('certificateContent').innerHTML = html; 
+        e('certificateModal').style.display = 'flex'; 
+    }
+    
+    e('closeModal').onclick = () => e('certificateModal').style.display = 'none';
+    e('printCertificate').onclick = () => { 
+        const w = window.open('', '_blank'); 
+        w.document.write('<html><head><title>Certificate</title>');
+        w.document.write('<link rel="preconnect" href="https://fonts.googleapis.com">');
+        w.document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
+        w.document.write('<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">');
+        w.document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">');
+        w.document.write('<style>');
+        w.document.write(`
+            @font-face {
+                font-family: 'Jameel Noori Nastaleeq';
+                src: url('https://fonts.jameelnoori.com/jameel-noori-nastaleeq.woff2') format('woff2'),
+                     url('https://fonts.jameelnoori.com/jameel-noori-nastaleeq.woff') format('woff'),
+                     url('https://cdn.jsdelivr.net/gh/akeelali/jameel-noori-nastaleeq@main/Jameel-Noori-Nastaleeq.ttf') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+            }
+            body { font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', Arial, sans-serif; background: #fff; padding: 20px; }
+            .professional-certificate {
+                border: 12px double #2e7d32;
+                padding: 30px 25px;
+                border-radius: 20px;
+                box-shadow: 0 0 30px rgba(0,80,0,0.2);
+                max-width: 700px;
+                margin: 0 auto;
+                background: #fff;
+                direction: rtl;
+                text-align: right;
+            }
+            .certificate-header { text-align: center; margin-bottom: 20px; }
+            .certificate-logo { width: 100px; height: auto; margin-bottom: 10px; }
+            .certificate-school-name { font-size: 2.5rem; color: #006400; font-weight: bold; line-height: 1.3; }
+            .certificate-title { font-size: 2rem; color: #2e7d32; border-bottom: 2px solid #a5d6a7; display: inline-block; padding-bottom: 5px; margin: 15px 0 25px; letter-spacing: 2px; }
+            .certificate-body { display: flex; gap: 20px; margin-bottom: 30px; }
+            .certificate-details { flex: 2; font-size: 1.2rem; line-height: 2; }
+            .certificate-details p { margin: 10px 0; display: flex; align-items: baseline; }
+            .certificate-details strong { min-width: 140px; color: #1b5e20; }
+            .certificate-photo { flex: 1; display: flex; justify-content: center; align-items: flex-start; }
+            .certificate-photo img { width: 130px; height: 160px; object-fit: cover; border: 3px solid #2e7d32; border-radius: 15px; background: #f1f8e9; padding: 5px; }
+            .certificate-photo .no-photo { width: 130px; height: 160px; border: 3px dashed #2e7d32; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: #f9fff9; color: #81c784; font-size: 3rem; }
+            .certificate-signatures {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 40px;
+                align-items: flex-end;
+            }
+            .signature-box {
+                text-align: center;
+                width: 200px;
+            }
+            .signature-line {
+                border-bottom: 2px solid #2e7d32;
+                margin: 10px 0 5px;
+                height: 30px;
+                width: 100%;
+            }
+            .signature-label {
+                font-weight: bold;
+                color: #1b5e20;
+                font-size: 1rem;
+            }
+            .center-school {
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.3rem;
+                color: #006400;
+                align-self: center;
+            }
+        `);
+        w.document.write('</style></head><body>');
+        w.document.write(e('certificateContent').innerHTML);
+        w.document.write('</body></html>'); 
+        w.document.close(); 
+        w.print(); 
+    };
+    
+    e('exportExcelBtn').onclick = () => { 
+        const data = students.map(s => ({ 
+            'Admission No': s.admNo, 
+            'Name': s.name, 
+            'Class': s.class, 
+            "Father's Name": s.fatherName,
+            "Caste/Tribe": s.caste || '',
+            'Phone': s.phone, 
+            'DOB': formatDate(s.dob),
+            'DOB in Words': s.dobInWords || '', 
+            'Admission Date': formatDate(s.admissionDate),
+            'Status': s.active === false ? 'Left' : 'Current'
+        })); 
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Students"); XLSX.writeFile(wb, `GMHSS_Students_${new Date().toISOString().slice(0,10)}.xlsx`); 
+    };
+    
+    function renderList() { 
+        const term = e('searchInput').value.toLowerCase(); 
+        const t = translations[isUrdu ? 'ur' : 'en']; 
+        let filtered = students; 
+        if (selectedStatus === 'current') {
+            filtered = filtered.filter(s => s.active !== false);
+        } else if (selectedStatus === 'left') {
+            filtered = filtered.filter(s => s.active === false);
+        }
+        if (selectedClass !== 'all') filtered = filtered.filter(s => s.class === selectedClass); 
+        filtered = filtered.filter(s => s.name?.toLowerCase().includes(term) || s.admNo?.toLowerCase().includes(term) || s.fatherName?.toLowerCase().includes(term) || s.class?.toLowerCase().includes(term) || (s.caste && s.caste.toLowerCase().includes(term))); 
+        if (filtered.length === 0) { e('studentList').innerHTML = `<div class="no-data"><i class="fas fa-search fa-2x"></i><p>${t.noStudents}</p></div>`; return; } 
+        e('studentList').innerHTML = filtered.map(s => {
+            const leftBadge = s.active === false ? `<span class="left-badge">${t.leftStatus}</span>` : '';
+            return `<div class="student-card"><div class="student-avatar">${s.photo ? `<img src="${s.photo}" style="width:100%;height:100%;object-fit:cover">` : '<i class="fas fa-school fa-2x"></i>'}</div><div class="student-info"><div class="student-name">${s.name} ${leftBadge}</div><div class="student-details"><i class="fas fa-id-card"></i> ${t.class}: ${s.class} | <i class="fas fa-hashtag"></i> ${s.admNo} | <i class="fas fa-users"></i> ${s.caste || ''}</div><div class="student-contact"><i class="fas fa-user"></i> ${s.fatherName} | <i class="fas fa-phone"></i> ${s.phone}</div><div class="student-actions"><button class="action-btn print" onclick="printStudent('${s.id}')"><i class="fas fa-print"></i> ${t.print}</button><button class="action-btn thermal" onclick="shareStudent('${s.id}')"><i class="fas fa-share-alt"></i> ${t.share}</button><button class="action-btn edit" onclick="editStudent('${s.id}')"><i class="fas fa-edit"></i> ${t.edit}</button><button class="action-btn delete" onclick="deleteMe('${s.id}')"><i class="fas fa-trash"></i> ${t.delete}</button>${s.active !== false ? `<button class="action-btn pass" onclick="promoteStudent('${s.id}', true)"><i class="fas fa-check-circle"></i> ${t.pass}</button><button class="action-btn fail" onclick="promoteStudent('${s.id}', false)"><i class="fas fa-times-circle"></i> ${t.fail}</button><button class="action-btn left" onclick="markLeft('${s.id}')"><i class="fas fa-door-open"></i> ${t.left}</button>` : ''}</div></div></div>`}).join(''); 
+    }
+    e('searchInput').addEventListener('input', renderList);
+
+    e('class').addEventListener('change', function() {
+        lastSelectedClass = this.value;
+    });
+
+    e('studentForm').onsubmit = async (event) => {
+        event.preventDefault();
+        if (currentId !== null) return;
+        if (isSubmitting) return;
+        const t = translations[isUrdu ? 'ur' : 'en'];
+        if (!e('name').value || !e('class').value || !e('fatherName').value || !e('caste').value || !e('phone').value || !e('dob').value || !e('admissionDate').value) { showMessage(t.fillAllFields, false); return; }
+        const admNo = e('admNo').value.trim();
+        if (!admNo) { showMessage('Admission number is required', false); return; }
+        if (isDuplicateAdmissionNo(admNo)) { showMessage(t.duplicateAdmNo, false); return; }
+        e('saveBtn').disabled = true;
+        e('saveBtn').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.saving}`;
+        isSubmitting = true;
+
+        try {
+            const newStudentRef = studentsRef.push();
+            const studentId = newStudentRef.key;
+            
+            let photoUrl = '';
+            if (currentPhotoBlob) {
+                photoUrl = await uploadPhoto(studentId, currentPhotoBlob);
+            }
+
+            let dobInWords = e('dobInWords').value;
+            if (!dobInWords && e('dob').value) dobInWords = dateToWords(e('dob').value);
+            
+            const data = { 
+                admNo, 
+                name: e('name').value, 
+                class: e('class').value, 
+                fatherName: e('fatherName').value, 
+                caste: e('caste').value,
+                phone: e('phone').value, 
+                dob: e('dob').value, 
+                dobInWords, 
+                admissionDate: e('admissionDate').value, 
+                photo: photoUrl,
+                createdAt: new Date().toISOString(), 
+                updatedAt: new Date().toISOString(),
+                active: true
+            };
+            await newStudentRef.set(data);
+            showMessage(t.saved);
+            lastSelectedClass = e('class').value;
+            resetForm();
+        } catch (error) { showMessage('Error: ' + error.message, false); } finally {
+            e('saveBtn').disabled = false;
+            e('saveBtn').innerHTML = `<i class="fas fa-save"></i> ${t.save}`;
+            isSubmitting = false;
+        }
+    };
+
+    e('updateBtn').onclick = async (event) => {
+        event.preventDefault();
+        if (!currentId) { showMessage('No record selected for update', false); return; }
+        const t = translations[isUrdu ? 'ur' : 'en'];
+        if (!e('name').value || !e('class').value || !e('fatherName').value || !e('caste').value || !e('phone').value || !e('dob').value || !e('admissionDate').value) { showMessage(t.fillAllFields, false); return; }
+        const admNo = e('admNo').value.trim();
+        if (!admNo) { showMessage('Admission number is required', false); return; }
+        if (isDuplicateAdmissionNo(admNo, currentId)) { showMessage(t.duplicateAdmNo, false); return; }
+        if (isSubmitting) return;
+        e('updateBtn').disabled = true;
+        e('updateBtn').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.updating}`;
+        isSubmitting = true;
+
+        try {
+            let photoUrl = e('studentPhoto').src && !e('studentPhoto').classList.contains('hidden') ? e('studentPhoto').src : '';
+            if (currentPhotoBlob) {
+                photoUrl = await uploadPhoto(currentId, currentPhotoBlob);
+            }
+
+            let dobInWords = e('dobInWords').value;
+            if (!dobInWords && e('dob').value) dobInWords = dateToWords(e('dob').value);
+            
+            const updatedData = { 
+                admNo, 
+                name: e('name').value, 
+                class: e('class').value, 
+                fatherName: e('fatherName').value, 
+                caste: e('caste').value,
+                phone: e('phone').value, 
+                dob: e('dob').value, 
+                dobInWords, 
+                admissionDate: e('admissionDate').value, 
+                photo: photoUrl, 
+                updatedAt: new Date().toISOString() 
+            };
+            const originalStudent = students.find(s => s.id === currentId);
+            if (originalStudent && originalStudent.createdAt) updatedData.createdAt = originalStudent.createdAt;
+            if (originalStudent && originalStudent.active !== undefined) updatedData.active = originalStudent.active;
+            
+            await studentsRef.child(currentId).update(updatedData);
+            showMessage(t.updated);
+            lastSelectedClass = e('class').value;
+            resetForm();
+        } catch (error) { showMessage('Error updating record: ' + error.message, false); } finally {
+            e('updateBtn').disabled = false;
+            e('updateBtn').innerHTML = `<i class="fas fa-edit"></i> ${t.update}`;
+            isSubmitting = false;
+        }
+    };
+
+    document.querySelectorAll('.tab, .nav-item').forEach(btn => { 
+        btn.onclick = () => { 
+            const tab = btn.dataset.tab || btn.dataset.nav; 
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
+            document.querySelectorAll('.tab, .nav-item').forEach(t => t.classList.remove('active')); 
+            e(tab + 'Panel').classList.add('active'); 
+            btn.classList.add('active'); 
+            if (tab === 'add' && currentId === null) setAutoAdmissionDate(); 
+        }; 
+    });
+
+    setLanguage('ur');
+    e('btnUrdu').classList.add('active');
+    e('btnEnglish').classList.remove('active');
+    e('loginBtnUrdu').classList.add('active');
+    e('loginBtnEnglish').classList.remove('active');
+</script>
+</body>
+</html>
