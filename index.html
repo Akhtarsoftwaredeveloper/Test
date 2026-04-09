@@ -1161,23 +1161,22 @@
         });
     });
 
-    // ========== UPDATED 58MM THERMAL RECEIPT (SMOOTH MOBILE PRINTING) ==========
+    // ========== UPDATED 58MM THERMAL RECEIPT (COMPACT SPACING) ==========
     function printThermalReceipt(transaction, type = 'sale') {
         const personText = type === 'purchase' ? 'سپلائر:' : 'کسٹمر:';
         
         const itemsHtml = transaction.items.map(item => `
             <tr>
-                <td style="padding: 3px 0; text-align: right; font-size: 11px;">${item.name}</td>
-                <td style="padding: 3px 0; text-align: center; font-size: 11px;">${parseFloat(item.price).toFixed(0)}</td>
-                <td style="padding: 3px 0; text-align: center; font-size: 11px;" dir="ltr">${parseFloat(item.qty).toFixed(2)}kg</td>
-                <td style="padding: 3px 0; text-align: left; font-size: 11px; font-weight: 600;">${(parseFloat(item.qty) * parseFloat(item.price)).toFixed(0)}</td>
+                <td style="padding: 1px 0; text-align: right; font-size: 11px;">${item.name}</td>
+                <td style="padding: 1px 0; text-align: center; font-size: 11px;">${parseFloat(item.price).toFixed(0)}</td>
+                <td style="padding: 1px 0; text-align: center; font-size: 11px;" dir="ltr">${parseFloat(item.qty).toFixed(2)}kg</td>
+                <td style="padding: 1px 0; text-align: left; font-size: 11px; font-weight: 600;">${(parseFloat(item.qty) * parseFloat(item.price)).toFixed(0)}</td>
             </tr>
         `).join('');
         
         const balanceVal = parseFloat(transaction.balance) || 0;
         const balanceText = balanceVal >= 0 ? "تبدیلی / واپسی" : "بقایا رقم";
         
-        // Pure 58mm optimized HTML
         const receiptHTML = `
         <!DOCTYPE html>
         <html lang="ur" dir="rtl">
@@ -1189,23 +1188,23 @@
                 
                 @page { margin: 0; size: 58mm auto; }
                 body { margin: 0; padding: 0; font-family: 'Noto Nastaliq Urdu', sans-serif; background: white; color: black; }
-                .ticket { width: 58mm; max-width: 58mm; padding: 4px; margin: 0 auto; box-sizing: border-box; }
+                .ticket { width: 58mm; max-width: 58mm; padding: 2px; margin: 0 auto; box-sizing: border-box; }
                 .text-center { text-align: center; }
-                .border-bottom { border-bottom: 1px dashed black; padding-bottom: 4px; margin-bottom: 4px; }
-                .border-top { border-top: 1px dashed black; padding-top: 4px; margin-top: 4px; }
-                p, h2, th, td { margin: 0; color: black; }
+                .border-bottom { border-bottom: 1px dashed black; padding-bottom: 2px; margin-bottom: 2px; }
+                .border-top { border-top: 1px dashed black; padding-top: 2px; margin-top: 2px; }
+                p, h2, th, td { margin: 0; padding: 0; color: black; }
                 table { width: 100%; border-collapse: collapse; }
-                th { border-bottom: 1px solid black; padding-bottom: 2px; font-size: 10px; }
-                .flex-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px; }
+                th { border-bottom: 1px solid black; padding-bottom: 1px; font-size: 10px; }
+                .flex-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 1px; }
                 .bold { font-weight: bold; }
             </style>
         </head>
         <body>
             <div class="ticket">
-                <div class="text-center border-bottom" style="padding-bottom: 2px; margin-bottom: 3px;">
+                <div class="text-center border-bottom" style="margin-bottom: 2px;">
                     <h2 style="font-size: 16px; font-weight: bold; margin: 0;">شیخ ڈرائی فروٹ</h2>
-                    <p style="font-size: 10px; margin: 1px 0;">نزدیک گنج گلی پشین بلوچستان</p>
-                    <p style="font-size: 10px; margin: 1px 0;" dir="ltr">03190112447 || 0336888808</p>
+                    <p style="font-size: 10px; margin: 0;">نزدیک گنج گلی پشین بلوچستان</p>
+                    <p style="font-size: 10px; margin: 0;" dir="ltr">03190112447 || 0336888808</p>
                 </div>
                 
                 <div class="flex-row border-bottom">
@@ -1213,7 +1212,7 @@
                     <span>${transaction.date.split(',')[0]}</span>
                 </div>
                 
-                <div style="font-size: 11px; margin-bottom: 4px;" class="border-bottom">
+                <div style="font-size: 11px; margin-bottom: 2px;" class="border-bottom">
                     <span class="bold">${personText}</span> ${transaction.customer || 'نامعلوم'} 
                     ${transaction.mobile ? `<br><span dir="ltr">${transaction.mobile}</span>` : ''}
                 </div>
@@ -1247,7 +1246,7 @@
                     </div>
                 </div>
                 
-                <div class="text-center border-top" style="font-size: 9px; padding-top: 6px;">
+                <div class="text-center border-top" style="font-size: 9px; padding-top: 4px;">
                     شکریہ! معیار اور اعتماد کی علامت<br>
                     ڈویلپر: اختر محمد 03178022878
                     ${transaction.id && transaction.id.startsWith('off_') ? '<br>(آف لائن موڈ)' : ''}
@@ -1280,58 +1279,58 @@
         }, 800); 
     }
 
-    // ========== NEW FUNCTION: SHARE THERMAL RECEIPT (PNG/JPG GENERATOR) ==========
+    // ========== NEW FUNCTION: SHARE THERMAL RECEIPT (COMPACT IMAGE GENERATOR) ==========
     async function shareThermalReceipt(transaction, type = 'sale') {
         const personText = type === 'purchase' ? 'سپلائر:' : 'کسٹمر:';
         const itemsHtml = transaction.items.map(item => `
             <tr>
-                <td style="padding: 4px 0; text-align: right; font-size: 14px; border-bottom: 1px dashed #eee;">${item.name}</td>
-                <td style="padding: 4px 0; text-align: center; font-size: 14px; border-bottom: 1px dashed #eee;">${parseFloat(item.price).toFixed(0)}</td>
-                <td style="padding: 4px 0; text-align: center; font-size: 14px; border-bottom: 1px dashed #eee;" dir="ltr">${parseFloat(item.qty).toFixed(2)}kg</td>
-                <td style="padding: 4px 0; text-align: left; font-size: 14px; font-weight: bold; border-bottom: 1px dashed #eee;">${(parseFloat(item.qty) * parseFloat(item.price)).toFixed(0)}</td>
+                <td style="padding: 2px 0; text-align: right; font-size: 14px; border-bottom: 1px dashed #eee;">${item.name}</td>
+                <td style="padding: 2px 0; text-align: center; font-size: 14px; border-bottom: 1px dashed #eee;">${parseFloat(item.price).toFixed(0)}</td>
+                <td style="padding: 2px 0; text-align: center; font-size: 14px; border-bottom: 1px dashed #eee;" dir="ltr">${parseFloat(item.qty).toFixed(2)}kg</td>
+                <td style="padding: 2px 0; text-align: left; font-size: 14px; font-weight: bold; border-bottom: 1px dashed #eee;">${(parseFloat(item.qty) * parseFloat(item.price)).toFixed(0)}</td>
             </tr>
         `).join('');
         const balanceVal = parseFloat(transaction.balance) || 0;
         const balanceText = balanceVal >= 0 ? "تبدیلی / واپسی" : "بقایا رقم";
 
         const receiptHTML = `
-            <div style="width: 320px; padding: 20px; background: white; color: black; font-family: 'Noto Nastaliq Urdu', sans-serif; box-sizing: border-box; direction: rtl;">
-                <div style="text-align: center; border-bottom: 2px dashed black; padding-bottom: 6px; margin-bottom: 8px;">
+            <div style="width: 320px; padding: 10px; background: white; color: black; font-family: 'Noto Nastaliq Urdu', sans-serif; box-sizing: border-box; direction: rtl;">
+                <div style="text-align: center; border-bottom: 2px dashed black; padding-bottom: 4px; margin-bottom: 4px;">
                     <h2 style="font-size: 22px; font-weight: bold; margin: 0;">شیخ ڈرائی فروٹ</h2>
-                    <p style="font-size: 14px; margin: 2px 0;">نزدیک گنج گلی پشین بلوچستان</p>
-                    <p style="font-size: 14px; margin: 2px 0;" dir="ltr">03190112447 || 0336888808</p>
+                    <p style="font-size: 14px; margin: 0;">نزدیک گنج گلی پشین بلوچستان</p>
+                    <p style="font-size: 14px; margin: 0;" dir="ltr">03190112447 || 0336888808</p>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; border-bottom: 1px dashed #999; padding-bottom: 6px;">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px; border-bottom: 1px dashed #999; padding-bottom: 4px;">
                     <span>رسید #: <span style="font-family: sans-serif;">${transaction.receiptNo || '---'}</span></span>
                     <span style="font-family: sans-serif;">${transaction.date.split(',')[0]}</span>
                 </div>
-                <div style="font-size: 15px; margin-bottom: 10px; border-bottom: 2px dashed black; padding-bottom: 10px;">
+                <div style="font-size: 15px; margin-bottom: 6px; border-bottom: 2px dashed black; padding-bottom: 6px;">
                     <span style="font-weight: bold;">${personText}</span> ${transaction.customer || 'نامعلوم'} 
-                    ${transaction.mobile ? `<br><span dir="ltr" style="font-family: sans-serif; display:inline-block; margin-top:4px;">${transaction.mobile}</span>` : ''}
+                    ${transaction.mobile ? `<br><span dir="ltr" style="font-family: sans-serif; display:inline-block; margin-top:2px;">${transaction.mobile}</span>` : ''}
                 </div>
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px;">
                     <thead>
                         <tr>
-                            <th style="text-align: right; border-bottom: 2px solid black; font-size: 14px; padding-bottom: 6px;">آئٹم</th>
-                            <th style="text-align: center; border-bottom: 2px solid black; font-size: 14px; padding-bottom: 6px;">ریٹ</th>
-                            <th style="text-align: center; border-bottom: 2px solid black; font-size: 14px; padding-bottom: 6px;">وزن</th>
-                            <th style="text-align: left; border-bottom: 2px solid black; font-size: 14px; padding-bottom: 6px;">رقم</th>
+                            <th style="text-align: right; border-bottom: 2px solid black; font-size: 14px; padding-bottom: 2px;">آئٹم</th>
+                            <th style="text-align: center; border-bottom: 2px solid black; font-size: 14px; padding-bottom: 2px;">ریٹ</th>
+                            <th style="text-align: center; border-bottom: 2px solid black; font-size: 14px; padding-bottom: 2px;">وزن</th>
+                            <th style="text-align: left; border-bottom: 2px solid black; font-size: 14px; padding-bottom: 2px;">رقم</th>
                         </tr>
                     </thead>
-                    <tbody>${itemsHtml || '<tr><td colspan="4" style="text-align: center; font-size:14px; padding-top:10px;">کوئی اشیاء نہیں</td></tr>'}</tbody>
+                    <tbody>${itemsHtml || '<tr><td colspan="4" style="text-align: center; font-size:14px; padding-top:6px;">کوئی اشیاء نہیں</td></tr>'}</tbody>
                 </table>
-                <div style="border-top: 2px dashed black; padding-top: 10px; margin-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin-bottom: 6px;">
+                <div style="border-top: 2px dashed black; padding-top: 6px; margin-top: 6px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin-bottom: 2px;">
                         <span>کل رقم:</span><span dir="ltr" style="font-family: sans-serif;">${parseFloat(transaction.total).toFixed(0)} Rs</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 6px; color:#333;">
+                    <div style="display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 2px; color:#333;">
                         <span>نقدی:</span><span dir="ltr" style="font-family: sans-serif;">${parseFloat(transaction.cash).toFixed(0)} Rs</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px;">
                         <span>${balanceText}:</span><span dir="ltr" style="font-family: sans-serif;">${Math.abs(balanceVal).toFixed(0)} Rs</span>
                     </div>
                 </div>
-                <div style="text-align: center; border-top: 2px dashed black; padding-top: 10px; margin-top: 15px; font-size: 13px; color:#444;">
+                <div style="text-align: center; border-top: 2px dashed black; padding-top: 6px; margin-top: 8px; font-size: 13px; color:#444;">
                     شکریہ! معیار اور اعتماد کی علامت<br>ڈویلپر: اختر محمد 03178022878
                 </div>
             </div>`;
