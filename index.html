@@ -1,2051 +1,756 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>GMHSS Pishin - Login</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+  <title>نور احمد ٹائرز | جدید بینکنگ سسٹم</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    :root {
+      --bg-primary: #f4f7fc;
+      --surface: #ffffff;
+      --card-bg: #ffffff;
+      --text-primary: #1e2a3e;
+      --text-secondary: #5a6e8a;
+      --accent: #4f46e5;
+      --accent-light: #eef2ff;
+      --income: #10b981;
+      --expense: #ef4444;
+      --border-light: #e2e8f0;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+      --nav-bg: rgba(255,255,255,0.96);
+    }
+
+    body.dark {
+      --bg-primary: #1a1124;
+      --surface: #2d1b36;
+      --card-bg: #2d1b36;
+      --text-primary: #f3e8ff;
+      --text-secondary: #c4b5fd;
+      --border-light: #4a3a5c;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --nav-bg: #2d1b36e6;
+      --accent-light: #4a3a5c;
+      --accent: #a78bfa;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+
+    .app-container {
+      max-width: 550px;
+      margin: 0 auto;
+      background: var(--bg-primary);
+      min-height: 100vh;
+      position: relative;
+      padding-bottom: 80px;
+    }
+
+    .app-header {
+      padding: 16px 20px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+    }
+    .logo-area { text-align: center; flex: 1; }
+    .logo { font-weight: 700; font-size: 1rem; color: var(--accent); letter-spacing: -0.3px; }
+    .subtitle { font-size: 0.7rem; color: var(--text-secondary); }
+    .header-actions { display: flex; gap: 12px; }
+    .moon-btn {
+      background: var(--bg-primary); border: none; border-radius: 50%; width: 44px; height: 44px;
+      font-size: 1.3rem; color: var(--text-primary); cursor: pointer; display: flex;
+      align-items: center; justify-content: center; box-shadow: var(--shadow-sm); transition: 0.1s;
+    }
+    .moon-btn:active { transform: scale(0.94);}
+
+    .bottom-nav {
+      position: fixed; bottom: 0; right: 0; left: 0; max-width: 550px; margin: 0 auto;
+      background: var(--nav-bg); backdrop-filter: blur(12px); display: flex;
+      justify-content: space-around; padding: 10px 20px 22px; border-top: 1px solid var(--border-light); z-index: 20;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; background: transparent;
+      border: none; font-size: 0.7rem; color: var(--text-secondary); cursor: pointer; font-weight: 500;
+    }
+    .nav-item i { font-size: 1.4rem; }
+    .nav-item.active { color: var(--accent); transform: translateY(-2px); }
+
+    .card { background: var(--card-bg); border-radius: 24px; padding: 16px; margin: 12px 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); }
+    .stats-grid { display: flex; gap: 10px; margin: 12px 16px; }
+    .stat-card { flex: 1; background: var(--card-bg); border-radius: 20px; padding: 12px; box-shadow: var(--shadow-sm); text-align: center; }
+    .stat-title { font-size: 0.7rem; color: var(--text-secondary); }
+    .stat-amount { font-size: 1.2rem; font-weight: 700; margin-top: 4px; }
+    .income-color { color: var(--income); }
+    .expense-color { color: var(--expense); }
+
+    .filter-bar { margin: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px; background: var(--surface); border-radius: 40px; padding: 8px; }
+    .filter-chip { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 30px; padding: 6px 14px; font-size: 0.7rem; cursor: pointer; }
+    .filter-chip.active { background: var(--accent); color: white; }
+    .report-table { overflow-x: auto; font-size: 0.75rem; }
+    .report-table table { width: 100%; border-collapse: collapse; }
+    .report-table th, .report-table td { border-bottom: 1px solid var(--border-light); padding: 8px 4px; text-align: right; }
     
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-storage-compat.js"></script>
-
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif; 
-            background: #ffffff; 
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @font-face {
-            font-family: 'Jameel Noori Nastaleeq';
-            src: url('https://fonts.jameelnoori.com/jameel-noori-nastaleeq.woff2') format('woff2'),
-                 url('https://fonts.jameelnoori.com/jameel-noori-nastaleeq.woff') format('woff'),
-                 url('https://cdn.jsdelivr.net/gh/akeelali/jameel-noori-nastaleeq@main/Jameel-Noori-Nastaleeq.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-        
-        @font-face {
-            font-family: 'Jameel Noori Nastaleeq';
-            src: local('Jameel Noori Nastaleeq'),
-                 local('Jameel Noori Nastaleeq Regular'),
-                 url('https://raw.githubusercontent.com/nawzil/jameel-noori-nastaleeq/master/Jameel%20Noori%20Nastaleeq.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-        
-        .urdu-text { 
-            font-family: 'Jameel Noori Nastaleeq', 'Jameel Noori Nastaleeq Regular', 'Noto Nastaliq Urdu', 'AlQalam Shahzaib', 'Arial Unicode MS', 'sans-serif' !important; 
-            direction: rtl; 
-            font-size: 1.3rem; 
-            line-height: 2;
-            font-weight: normal;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        .urdu-text, 
-        [lang="ur"],
-        .school-name-urdu,
-        #schoolNameUrdu,
-        .estd-badge,
-        .nav-text,
-        .tab-text,
-        .stat-label,
-        .btn,
-        input,
-        select,
-        textarea {
-            font-family: inherit;
-        }
-        
-        body.urdu-mode,
-        body.urdu-mode .header *,
-        body.urdu-mode .bottom-nav *,
-        body.urdu-mode .tab-bar *,
-        body.urdu-mode .stat-card *,
-        body.urdu-mode .btn,
-        body.urdu-mode input,
-        body.urdu-mode select,
-        body.urdu-mode textarea {
-            font-family: 'Jameel Noori Nastaleeq', 'Jameel Noori Nastaleeq Regular', 'Noto Nastaliq Urdu', 'sans-serif' !important;
-        }
-        
-        .mobile-container { 
-            width: 100%;
-            min-height: 100vh;
-            background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            box-shadow: none;
-            border-radius: 0;
-        }
-        
-        .header { 
-            background: #ffffff; 
-            padding: 28px 16px 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border-bottom: 4px solid #2e7d32;
-            box-shadow: 0 4px 12px rgba(0,80,0,0.08);
-        }
-        
-        .logo-container img {
-            width: 110%;
-            height: 90%;
-            object-fit: cover;
-            display: block;
-        }
-        
-        .logo-img {
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: #2e7d32;
-        }
-        
-        .school-name-urdu { 
-            font-family: 'Jameel Noori Nastaleeq', 'Jameel Noori Nastaleeq Regular', 'Noto Nastaliq Urdu', 'sans-serif' !important; 
-            font-size: 2.2rem; 
-            color: #006400;
-            margin-top: 4px;
-        }
-        
-        .estd-badge { 
-            background: #004225;
-            color: #ffffff; 
-            display: inline-block; 
-            padding: 10px 30px; 
-            border-radius: 40px; 
-            font-weight: 600;
-            font-size: 1rem;
-            box-shadow: 0 5px 12px rgba(46,125,50,0.3);
-            margin-top: 5px;
-        }
-        
-        .lang-switcher { 
-            display: flex; 
-            background: #e8f5e9;
-            border-radius: 50px; 
-            margin: 18px 16px 12px; 
-            padding: 4px;
-            border: 1px solid #a5d6a7;
-        }
-        
-        .lang-btn { 
-            flex: 1; 
-            padding: 12px; 
-            border: none; 
-            border-radius: 50px; 
-            font-weight: 600; 
-            background: transparent; 
-            color: #1b5e20; 
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .lang-btn.active { 
-            background: #2e7d32; 
-            color: #ffffff; 
-            box-shadow: 0 2px 8px rgba(46,125,50,0.3);
-        }
-        
-        .login-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        .login-card {
-            background: #ffffff;
-            border-radius: 30px;
-            padding: 30px 25px;
-            box-shadow: 0 10px 30px rgba(0,80,0,0.1);
-            border: 2px solid #c8e6c9;
-        }
-        
-        .login-title {
-            color: #1b5e20;
-            font-size: 1.8rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .login-title i {
-            color: #2e7d32;
-            margin-right: 10px;
-        }
-        
-        .login-form-group {
-            margin-bottom: 20px;
-        }
-        
-        .login-form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #1b5e20;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .login-form-group input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e8f5e9;
-            border-radius: 50px;
-            font-size: 1rem;
-            transition: all 0.3s;
-            background: #f9fff9;
-        }
-        
-        .login-form-group input:focus {
-            outline: none;
-            border-color: #2e7d32;
-            box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 50px;
-            border: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-        
-        .login-btn-primary {
-            background: #2e7d32;
-            color: white;
-            box-shadow: 0 8px 18px -5px #2e7d32;
-        }
-        
-        .login-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 20px -5px #1b5e20;
-        }
-        
-        .login-btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .login-footer {
-            text-align: center;
-            margin-top: 25px;
-            color: #2e7d32;
-        }
-        
-        .login-footer a {
-            color: #1b5e20;
-            text-decoration: none;
-            font-weight: 700;
-        }
-        
-        .login-footer a:hover {
-            text-decoration: underline;
-        }
-        
-        .error-message {
-            background: #ffebee;
-            color: #d32f2f;
-            padding: 12px;
-            border-radius: 50px;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 2px solid #ffcdd2;
-            font-weight: 600;
-            display: none;
-        }
-        
-        .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 12px;
-            border-radius: 50px;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 2px solid #a5d6a7;
-            font-weight: 600;
-            display: none;
-        }
-        
-        .login-divider {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-        }
-        
-        .login-divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #c8e6c9;
-            z-index: 1;
-        }
-        
-        .login-divider span {
-            background: white;
-            padding: 0 15px;
-            color: #2e7d32;
-            position: relative;
-            z-index: 2;
-            font-size: 0.9rem;
-        }
-        
-        .logout-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #ffebee;
-            border: 2px solid #ffcdd2;
-            color: #d32f2f;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: none;
-            z-index: 100;
-        }
-        
-        .logout-btn:hover {
-            background: #ffcdd2;
-        }
-        
-        .logout-btn i {
-            margin-right: 8px;
-        }
-        
-        .main-content {
-            display: none;
-        }
-        
-        .stats-row { 
-            display: flex; 
-            gap: 12px; 
-            padding: 0 16px 20px; 
-        }
-        
-        .stat-card { 
-            background: #f1f8e9;
-            flex: 1; 
-            padding: 16px 4px; 
-            border-radius: 24px; 
-            text-align: center; 
-            box-shadow: 0 4px 10px rgba(0,50,0,0.05);
-            border: 1px solid #c8e6c9;
-            transition: all 0.3s ease;
-            animation: softPulse 5s infinite ease-in-out;
-        }
-        
-        @keyframes softPulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.02); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .stat-number { 
-            font-size: 2rem; 
-            font-weight: 800; 
-            color: #1b5e20; 
-            line-height: 1.2;
-            transition: opacity 0.5s ease-in-out;
-        }
-        
-        .stat-label {
-            color: #2e7d32;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: opacity 0.5s ease-in-out;
-        }
-        
-        .fade-out {
-            opacity: 0;
-        }
-        .fade-in {
-            opacity: 1;
-        }
-        
-        .tab-bar { 
-            display: flex; 
-            background: #e8f5e9;
-            border-radius: 50px; 
-            margin: 0 16px 20px; 
-            padding: 4px;
-            border: 1px solid #a5d6a7;
-        }
-        
-        .tab { 
-            flex: 1; 
-            padding: 12px 0; 
-            border: none; 
-            border-radius: 50px; 
-            font-weight: 600; 
-            background: transparent; 
-            color: #1b5e20; 
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .tab.active { 
-            background: #2e7d32; 
-            color: #ffffff; 
-            box-shadow: 0 2px 8px rgba(46,125,50,0.3);
-        }
-        
-        .panel { display: none; padding: 0 16px 20px; flex: 1; }
-        .panel.active { display: block; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        input, select, textarea { 
-            width: 100%; 
-            padding: 15px; 
-            border: 1px solid #c8e6c9; 
-            border-radius: 18px; 
-            font-size: 1rem;
-            background: #ffffff;
-            color: #1b5e20;
-            transition: 0.2s;
-            box-shadow: 0 2px 5px rgba(0,30,0,0.02);
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            border-color: #2e7d32;
-            box-shadow: 0 0 0 3px rgba(46,125,50,0.15);
-        }
-        
-        input::placeholder { color: #81c784; }
-        select option { background: #ffffff; color: #1b5e20; }
-        
-        input[readonly] {
-            background-color: #f5f5f5;
-            color: #2e7d32;
-            font-weight: 500;
-            cursor: default;
-        }
-        
-        .urdu-mode input[readonly] {
-            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif !important;
-        }
-        
-        .photo-area { 
-            display: flex; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-            align-items: center; 
-            background: #f1f8e9;
-            padding: 15px;
-            border-radius: 24px;
-            box-shadow: 0 4px 10px rgba(0,50,0,0.03);
-            border: 1px solid #c8e6c9;
-        }
-        
-        .photo-preview { 
-            width: 90px; 
-            height: 110px; 
-            border-radius: 18px; 
-            border: 2px dashed #2e7d32; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden;
-            background: #ffffff;
-            position: relative;
-        }
-        
-        .photo-preview i { font-size: 2.5rem; color: #81c784; }
-        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .photo-options { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-        .photo-btn { 
-            padding: 12px; border-radius: 16px; border: none; font-weight: 600; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; 
-            transition: 0.2s;
-        }
-        .camera-btn { background: #2e7d32; color: white; }
-        .gallery-btn { background: #ffffff; color: #1b5e20; border: 1px solid #a5d6a7; }
-        .photo-hint { font-size: 0.75rem; color: #2e7d32; margin: 5px 15px; text-align: center; }
-        
-        .btn { 
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 40px; 
-            border: none; 
-            font-weight: 600; 
-            cursor: pointer; 
-            margin-top: 10px; 
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: 0.2s;
-        }
-        
-        .btn-primary { background: #2e7d32; color: white; box-shadow: 0 8px 18px -5px #2e7d32; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px #1b5e20; }
-        .btn-success { background: #2e7d32; color: white; }
-        .btn-outline { border: 2px solid #2e7d32; color: #1b5e20; background: transparent; }
-        .btn-outline:hover { background: #e8f5e9; }
-        .btn-danger { background: #d32f2f; color: white; }
-        .btn-info { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
-        .btn-warning { background: #ff8f00; color: white; }
-
-        .class-filter-section {
-            background: #f1f8e9; border-radius: 24px; padding: 16px; margin-bottom: 16px; border: 1px solid #c8e6c9;
-        }
-        .class-filter-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; color: #1b5e20; display: flex; justify-content: space-between; align-items: center; }
-        .class-filter-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; max-height: 180px; overflow-y: auto; padding: 3px; }
-        .class-badge { background: #ffffff; padding: 8px 14px; border-radius: 25px; font-size: 0.85rem; font-weight: 500; color: #1b5e20; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; border: 1px solid #a5d6a7; }
-        .class-badge:hover { background: #e8f5e9; }
-        .class-badge.active { background: #2e7d32; color: white; border-color: #2e7d32; }
-        .class-badge .count { background: #c8e6c9; padding: 2px 6px; border-radius: 15px; font-size: 0.7rem; color:#1b5e20; }
-        .class-badge.active .count { background: #81c784; color: #1b5e20; }
-        .section-filter-row { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .section-badge { background: #e8f5e9; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; border: 1px solid #a5d6a7; }
-        .section-badge.active { background: #2e7d32; color: white; }
-        
-        .student-card { 
-            background: #ffffff; border-radius: 24px; padding: 16px; margin-bottom: 12px; 
-            display: flex; gap: 15px; border: 1px solid #c8e6c9; box-shadow: 0 4px 12px rgba(0,30,0,0.03);
-        }
-        .student-avatar { width: 60px; height: 60px; border-radius: 18px; overflow: hidden; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #2e7d32; border: 2px solid #2e7d32; }
-        .student-info { flex: 1; }
-        .student-name { font-weight: 700; color: #1b5e20; font-size: 1.1rem; margin-bottom: 4px; }
-        .student-details { font-size: 0.8rem; color: #2e7d32; margin-bottom: 4px; }
-        .student-contact { font-size: 0.75rem; color: #388e3c; margin-bottom: 8px; }
-        .student-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-        .action-btn { padding: 6px 14px; border-radius: 30px; border: none; font-size: 0.7rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-weight:600; }
-        .action-btn.print { background: #2e7d32; color: white; }
-        .action-btn.thermal { background: #ff8f00; color: white; }
-        .action-btn.edit { background: #ffb300; color: #1f2a0e; }
-        .action-btn.delete { background: #d32f2f; color: white; }
-        .action-btn.pass { background: #2e7d32; color: white; }
-        .action-btn.fail { background: #b71c1c; color: white; }
-        .action-btn.left { background: #6c757d; color: white; }
-        .left-badge { background: #6c757d; color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; margin-left: 8px; }
-        
-        .status-filter {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            justify-content: center;
-        }
-        .status-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 30px;
-            border: 1px solid #a5d6a7;
-            background: #f1f8e9;
-            color: #1b5e20;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .status-btn.active {
-            background: #2e7d32;
-            color: white;
-            border-color: #2e7d32;
-        }
-        
-        .bottom-nav { 
-            background: #ffffff; padding: 12px 20px; display: flex; justify-content: space-around; 
-            border-top: 3px solid #2e7d32; box-shadow: 0 -4px 12px rgba(0,30,0,0.05);
-            margin-top: auto;
-        }
-        .nav-item { color: #81c784; text-align: center; font-size: 0.7rem; cursor: pointer; transition: 0.2s; padding: 8px 20px; border-radius: 30px; }
-        .nav-item.active { background: #e8f5e9; color: #1b5e20; font-weight:600; }
-        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 2px; }
-
-        .search-export { display: flex; gap: 10px; margin-bottom: 15px; }
-        .search-export input { flex: 1; background: #ffffff; border: 1px solid #c8e6c9; padding: 14px; color: #1b5e20; }
-        .search-export input::placeholder { color: #a5d6a7; }
-        .search-export button { width: auto; padding: 0 20px; margin-top: 0; }
-
-        .class-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin: 15px 0; }
-        .class-stat-item { background: #f1f8e9; padding: 10px 5px; border-radius: 20px; text-align: center; border: 1px solid #c8e6c9; }
-        .class-stat-item .class-name { font-weight: 600; color: #1b5e20; font-size: 0.75rem; }
-        .class-stat-item .class-count { font-size: 1.2rem; font-weight: 700; color: #2e7d32; }
-        .section-stats { display: flex; justify-content: center; gap: 10px; margin-top: 5px; font-size: 0.7rem; }
-        
-        .cropper-modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,30,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; }
-        .cropper-container { background: #ffffff; padding: 20px; border-radius: 30px; width: 90%; max-width: 400px; border: 3px solid #2e7d32; }
-        .cropper-container h3 { color: #1b5e20; }
-        .cropper-box { max-height: 60vh; overflow: hidden; margin-bottom: 15px; background: #e8f5e9; border-radius: 20px; }
-        .cropper-actions button { flex:1; padding:14px; border-radius: 40px; border:none; font-weight:600; cursor:pointer; }
-        .crop-btn { background: #2e7d32; color: white; }
-        .cancel-btn { background: #f5f5f5; color: #1b5e20; border:1px solid #c8e6c9; }
-
-        .certificate-modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,30,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .certificate-content { background: #ffffff; padding: 25px; border-radius: 30px; max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto; border: 3px solid #2e7d32; }
-        
-        /* Compact Receipt Design for 58mm Share */
-        .receipt-share-container {
-            position: fixed;
-            left: -9999px;
-            top: 0;
-            width: 220px; /* ~58mm width */
-            background: #ffffff;
-            padding: 8px;
-            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif;
-            color: #000;
-            direction: rtl;
-            text-align: right;
-            box-sizing: border-box;
-            border: 1px solid #000;
-        }
-        .receipt-header {
-            text-align: center;
-            border-bottom: 2px dashed #000;
-            padding-bottom: 5px;
-            margin-bottom: 8px;
-        }
-        .receipt-title { font-size: 1.1rem; font-weight: bold; line-height: 1.4; }
-        .receipt-subtitle { font-size: 0.9rem; margin-top: 3px; }
-        .receipt-body { font-size: 0.85rem; line-height: 1.8; }
-        .receipt-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccc; padding: 3px 0; }
-        .receipt-label { font-weight: bold; }
-
-        .no-data { text-align: center; padding: 40px; color: #81c784; background: #f1f8e9; border-radius: 28px; }
-        .success-message { background: #2e7d32; color: white; border-radius: 30px; padding: 14px; text-align: center; margin:10px 0; animation: slideIn 0.3s, fadeOut 3s forwards; }
-        .error-message { background: #d32f2f; color: white; border-radius: 30px; padding: 14px; text-align: center; margin:10px 0; animation: slideIn 0.3s, fadeOut 3s forwards; }
-        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
-        
-        .hidden { display: none !important; }
-    </style>
+    .share-btn { background: var(--accent); color: white; border: none; border-radius: 40px; padding: 12px; margin-top: 12px; width: 100%; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+    .customer-card, .transaction-card { background: var(--card-bg); border-radius: 20px; padding: 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm); }
+    .view-btn { background: var(--accent-light); border: none; padding: 8px 14px; border-radius: 30px; font-weight: 500; color: var(--accent); cursor: pointer; font-size: 0.8rem; }
+    .edit-icon, .delete-icon { cursor: pointer; margin: 0 8px; font-size: 1.6rem; padding: 8px; border-radius: 50%; background: var(--accent-light); transition: 0.1s; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; }
+    .edit-icon:hover, .delete-icon:hover { transform: scale(1.05);}
+    .edit-icon:active, .delete-icon:active { transform: scale(0.95);}
+    
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
+    .modal-content { background: var(--surface); width: 90%; max-width: 380px; border-radius: 28px; padding: 20px; max-height: 80vh; overflow-y: auto; }
+    input, select, textarea { width: 100%; padding: 10px; margin: 6px 0; border-radius: 20px; border: 1px solid var(--border-light); background: var(--bg-primary); color: var(--text-primary); font-size: 0.9rem; }
+    .btn-primary { background: var(--accent); border: none; padding: 12px; border-radius: 40px; color: white; font-weight: 600; width: 100%; margin-top: 12px; cursor: pointer; font-size: 0.9rem; }
+    .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+    
+    .circle-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+    .fab-add { position: fixed; bottom: 85px; left: 24px; background: var(--accent); width: 56px; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; box-shadow: var(--shadow-md); cursor: pointer; z-index: 15; }
+    .hidden { display: none; }
+    .back-button { background: var(--surface); border: none; padding: 8px 18px; border-radius: 40px; margin: 8px 16px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.8rem; }
+    .transaction-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 12px 0; border-bottom: 1px solid var(--border-light); gap: 8px; }
+    .running-balance { font-size: 0.7rem; color: var(--text-secondary); }
+    .qr-container { text-align: center; padding: 16px; }
+    #qrcode { display: flex; justify-content: center; margin: 12px 0; }
+    .report-for-share { background: white; color: black; padding: 20px; font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq'; direction: rtl; max-width: 100%; }
+  </style>
 </head>
 <body>
-<div class="mobile-container">
-    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span id="logoutText">Logout</span></button>
-    
-    <div id="loginSection" class="login-container">
-        <div class="login-card">
-            <img src="https://i.postimg.cc/gjYJbrGp/logo.png" 
-                     alt="School Logo" 
-                     class="logo-img"
-                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'140\' height=\'140\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'60\' text-anchor=\'middle\' fill=\'%232e7d32\' font-family=\'Arial\'%3E🏫%3C/text%3E%3C/svg%3E'">
-            <div class="school-name-urdu" style="font-size: 1.8rem; margin-bottom: 20px;">گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین</div>
-            <div class="lang-switcher" style="margin: 10px 0 20px;">
-                <button class="lang-btn" id="loginBtnEnglish"><i class="fas fa-globe"></i> English</button>
-                <button class="lang-btn active" id="loginBtnUrdu"><i class="fas fa-globe"></i> اردو</button>
-            </div>
-            <h2 class="login-title" id="loginTitle"><i class="fas fa-lock"></i> <span id="loginTitleText">Login</span></h2>
-            <div id="loginError" class="error-message"></div>
-            <div id="loginSuccess" class="success-message"></div>
-            <form id="loginForm">
-                <div class="login-form-group">
-                    <label id="emailLabel" for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="Enter your email" required>
-                </div>
-                <div class="login-form-group">
-                    <label id="passwordLabel" for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
-                </div>
-                <button type="submit" class="login-btn login-btn-primary" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> <span id="loginBtnText">Login</span>
-                </button>
-            </form>
-            <div class="login-footer">
-                <a href="#" id="forgotPassword">Forgot Password?</a>
-            </div>
-            <div class="login-divider">
-                <span id="orText">OR</span>
-            </div>
-            <button class="login-btn login-btn-primary" id="guestLoginBtn" style="background: #004225;">
-                <i class="fas fa-user"></i> <span id="guestLoginText">Continue as Guest</span>
-            </button>
-            <div class="login-footer" style="margin-top: 15px;">
-                <span id="noAccountText">Don't have an account?</span> <a href="#" id="contactAdmin">Contact Admin</a>
-            </div>
-        </div>
-    </div>
-    
-    <div id="mainContent" class="main-content">
-        <div class="header">
-            <div class="logo-container">
-                <img src="https://i.postimg.cc/gjYJbrGp/logo.png" 
-                     alt="School Logo" 
-                     class="logo-img"
-                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'140\' height=\'140\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'60\' text-anchor=\'middle\' fill=\'%232e7d32\' font-family=\'Arial\'%3E🏫%3C/text%3E%3C/svg%3E'">
-            </div>
-            <div class="header-text">
-                <div class="school-name-urdu" id="schoolNameUrdu">گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین</div>
-            </div>
-            <div class="estd-badge" id="estdBadge"> Since 1890 • پشین</div>
-        </div>
-        
-        <div class="lang-switcher">
-            <button class="lang-btn" id="btnEnglish"><i class="fas fa-globe"></i> English</button>
-            <button class="lang-btn active" id="btnUrdu"><i class="fas fa-globe"></i> اردو</button>
-        </div>
-        
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-number" id="totalStudents">0</div>
-                <div class="stat-label" id="totalLabel">Total Students</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalClasses">0</div>
-                <div class="stat-label" id="classesLabel">Classes</div>
-            </div>
-            <div class="stat-card" id="rotatingClassCard">
-                <div class="stat-number" id="rotatingClassCount">0</div>
-                <div class="stat-label" id="rotatingClassName">کچی</div>
-            </div>
-        </div>
-        
-        <div class="tab-bar">
-            <button class="tab active" data-tab="add"><i class="fas fa-plus-circle"></i> <span class="tab-text" id="tabAddText">Add Student</span></button>
-            <button class="tab" data-tab="list"><i class="fas fa-list-alt"></i> <span class="tab-text" id="tabListText">Records</span></button>
-        </div>
-        
-        <div id="addPanel" class="panel active">
-            <div id="messageContainer"></div>
-            <div class="photo-area">
-                <div class="photo-preview" id="photoPreview">
-                    <img id="defaultPhotoLogo" src="https://i.postimg.cc/gjYJbrGp/logo.png" 
-                         onerror="this.style.display='none'; document.getElementById('userIcon').style.display='block';"
-                         style="width:100%; height:100%; object-fit:cover;">
-                    <i class="fas fa-user-graduate" id="userIcon" style="display: none;"></i>
-                    <img id="studentPhoto" class="hidden">
-                </div>
-                <div class="photo-options">
-                    <button class="photo-btn camera-btn" id="cameraBtn"><i class="fas fa-camera"></i> Use Camera</button>
-                    <button class="photo-btn gallery-btn" id="galleryBtn"><i class="fas fa-images"></i> Choose from Gallery</button>
-                </div>
-                <input type="file" id="photoInput" accept="image/*" capture="environment" hidden>
-                <input type="file" id="galleryInput" accept="image/*" hidden>
-            </div>
-            <div class="photo-hint" id="photoHint"><i class="fas fa-info-circle"></i> Photo will be cropped and uploaded</div>
-            
-            <form id="studentForm">
-                <input type="text" id="admNo" placeholder="Admission No" required class="form-group" inputmode="numeric" pattern="[0-9]*">
-                
-                <div class="form-row">
-                    <input type="text" id="name" placeholder="Student Name" required lang="ur" inputmode="text">
-                    
-                    <select id="class" required>
-                        <option value="" id="selectClassOption">Select Class</option>
-                        <option value="کچی">کچی</option>
-                        <option value="پکی">پکی</option>
-                        <option value="دوئم">دوئم</option>
-                        <option value="سوئم">سوئم</option>
-                        <option value="چہارم">چہارم</option>
-                        <option value="پنجم">پنجم</option>
-                        <option value="ششم">ششم</option>
-                        <option value="ہفتم">ہفتم</option>
-                        <option value="ہشتم">ہشتم</option>
-                        <option value="نہم">نہم</option>
-                        <option value="دہم">دہم</option>
-                        <option value="فرسٹ ائیر"> فرسٹ ائیر </option>
-                        <option value="سیکنڈ ائیر">سیکنڈ ائیر</option>
-                    </select>
-                </div>
-                
-                <div class="form-group" id="sectionGroup" style="display: none;">
-                    <select id="section">
-                        <option value="">Select Section</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                    </select>
-                </div>
-                
-                <input type="text" id="fatherName" placeholder="Father's Name" required class="form-group" lang="ur" inputmode="text">
-                <input type="text" id="caste" placeholder="Caste/Tribe" required class="form-group" lang="ur" inputmode="text">
-                <input type="tel" id="phone" placeholder="Phone Number" required class="form-group">
-                
-                <div class="form-row">
-                    <input type="date" id="dob" required>
-                    <input type="date" id="admissionDate" required> 
-                </div>
-                <input type="text" id="dobInWords" placeholder="Date of Birth in Words" readonly class="form-group" style="background-color: #f9fff9;">
-                
-                <button type="submit" class="btn btn-primary" id="saveBtn"><i class="fas fa-save"></i> Save to Firebase</button>
-                <button type="button" class="btn btn-success hidden" id="updateBtn"><i class="fas fa-edit"></i> Update Record</button>
-            </form>
-        </div>
-        
-        <div id="listPanel" class="panel">
-            <div class="search-export">
-                <input type="text" id="searchInput" placeholder="🔍 Search students...">
-                <button class="btn btn-success" id="exportExcelBtn"><i class="fas fa-file-excel"></i> Excel</button>
-            </div>
-            <div class="status-filter" id="statusFilter">
-                <button class="status-btn active" data-status="current">موجودہ</button>
-                <button class="status-btn" data-status="all">تمام</button>
-                <button class="status-btn" data-status="left">سابقہ</button>
-            </div>
-            <div class="class-filter-section">
-                <div class="class-filter-title">
-                    <span><i class="fas fa-filter"></i> <span id="filterTitle">Filter by Class</span></span>
-                    <button class="btn btn-info" id="clearFilterBtn" style="width: auto; padding: 6px 15px; margin: 0;"><i class="fas fa-times"></i> <span id="clearFilterText">Clear</span></button>
-                </div>
-                <div class="class-filter-badges" id="classFilterBadges"></div>
-                <div id="sectionFilterRow" class="section-filter-row" style="display: none;"></div>
-            </div>
-            <div class="class-stats" id="classStats"></div>
-            <div id="studentList"></div>
-        </div>
-    </div>
-    
-    <div class="bottom-nav" id="bottomNav" style="display: none;">
-        <div class="nav-item active" data-nav="add"><i class="fas fa-home"></i><span class="nav-text" id="navHomeText">Home</span></div>
-        <div class="nav-item" data-nav="list"><i class="fas fa-users"></i><span class="nav-text" id="navStudentsText">Students</span></div>
-    </div>
+<div id="loginContainer" class="app-container" style="display: flex; align-items: center; justify-content: center;">
+  <div class="card" style="width: 85%; text-align: center;">
+    <h2 style="font-size:1.3rem;">🚛 نور احمد ٹائرز</h2>
+    <p>پیشگی بقایا نظام</p>
+    <input type="email" id="loginEmail" placeholder="ای میل">
+    <input type="password" id="loginPassword" placeholder="پاس ورڈ">
+    <button class="btn-primary" id="loginBtn">لاگ ان</button>
+  </div>
 </div>
 
-<div id="cropperModal" class="cropper-modal">
-    <div class="cropper-container">
-        <h3 style="margin-bottom: 15px; text-align: center;">Crop Photo</h3>
-        <div class="cropper-box">
-            <img id="cropperImage" src="">
-        </div>
-        <div class="cropper-actions" style="display: flex; gap: 10px;">
-            <button class="crop-btn" id="cropBtn"><i class="fas fa-crop"></i> Crop & Save</button>
-            <button class="cancel-btn" id="cancelCropBtn"><i class="fas fa-times"></i> Cancel</button>
-        </div>
+<div id="appContainer" class="app-container hidden">
+  <div class="app-header">
+    <div class="header-actions">
+      <button class="moon-btn" id="darkModeToggle"><i class="fas fa-moon"></i></button>
+      <button class="moon-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
     </div>
-</div>
+    <div class="logo-area">
+      <div class="logo">نور احمد پرانا ٹائر ڈیلر</div>
+      <div class="subtitle">کچلاک</div>
+    </div>
+    <div style="width: 80px;"></div>
+  </div>
 
-<div id="certificateModal" class="certificate-modal">
-    <div class="certificate-content">
-        <span class="close-modal" id="closeModal"><i class="fas fa-times"></i></span>
-        <div id="certificateContent"></div>
-        <button class="btn btn-primary" id="printCertificate"><i class="fas fa-print"></i> Print Certificate</button>
-    </div>
+  <div id="dashboardView" class="view"></div>
+  <div id="customersView" class="view hidden"></div>
+  <div id="transactionsView" class="view hidden"></div>
+  <div id="profileView" class="view hidden"></div>
+  <div id="shareView" class="view hidden"></div>
+
+  <div class="bottom-nav">
+    <button class="nav-item" data-nav="dashboard"><i class="fas fa-chart-line"></i><span>ڈیش بورڈ</span></button>
+    <button class="nav-item" data-nav="customers"><i class="fas fa-users"></i><span>کسٹمرز</span></button>
+    <button class="nav-item" data-nav="transactions"><i class="fas fa-history"></i><span>ٹرانزیکشنز</span></button>
+    <button class="nav-item" data-nav="share"><i class="fas fa-share-alt"></i><span>شئر</span></button>
+  </div>
+  <div id="fabAddCustomer" class="fab-add hidden"><i class="fas fa-plus"></i></div>
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAiyuiOWNROyhP0ygKIULfP4jcX9tzjn28",
-        authDomain: "model-2da2e.firebaseapp.com",
-        databaseURL: "https://model-2da2e-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "model-2da2e",
-        storageBucket: "model-2da2e.firebasestorage.app",
-        messagingSenderId: "704044403504",
-        appId: "1:704044403504:web:1e234c58ab9fc4a8bbd6f5"
-    };
+  // ---------- Firebase Setup ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-zDLPniTv865DgeHSpPmgjzTyCpvpKNI",
+    authDomain: "banking-d3fa9.firebaseapp.com",
+    databaseURL: "https://banking-d3fa9-default-rtdb.firebaseio.com",
+    projectId: "banking-d3fa9",
+    storageBucket: "banking-d3fa9.firebasestorage.app",
+    messagingSenderId: "25954993122",
+    appId: "1:25954993122:web:1b84dcd4ace6606dab6fbb",
+    measurementId: "G-M2LS4E2VBD"
+  };
 
+  // Initialize Firebase
+  if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-    const storage = firebase.storage();
-    const studentsRef = db.ref('students');
-    const counterRef = db.ref('counter');
+  }
+  const auth = firebase.auth();
+  const db = firebase.database();
 
-    const e = (id) => document.getElementById(id);
+  // ---------- Data Model ----------
+  let customers = [];     
+  let transactions = [];  
+  let bankDetails = { name: "نور احمد پرانا ٹائر ڈیلر کچلاک", account: "PK36 NOOR 987654321", logo: "" };
+  let currentCustomerProfileId = null;
+
+  function generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 8); }
+
+  // --- NEW: Helper function to convert image to Base64 String ---
+  function getBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  // Real-time Listeners
+  function loadData() {
+    db.ref('customers').on('value', snap => {
+      let custData = snap.val();
+      customers = custData ? (Array.isArray(custData) ? custData : Object.values(custData)) : [];
+      refreshActiveView();
+    });
+
+    db.ref('transactions').on('value', snap => {
+      let txnsData = snap.val();
+      transactions = txnsData ? (Array.isArray(txnsData) ? txnsData : Object.values(txnsData)) : [];
+      refreshActiveView();
+    });
+
+    db.ref('bankDetails').on('value', snap => {
+      if (snap.val()) bankDetails = snap.val();
+      if(activeTab === 'share') renderShareSection();
+    });
+  }
+
+  function saveCustomers() { db.ref('customers').set(customers); }
+  function saveTransactions() { db.ref('transactions').set(transactions); }
+  function saveBankDetails() { db.ref('bankDetails').set(bankDetails); }
+
+  function refreshActiveView() {
+    if(activeTab === "dashboard" && !document.getElementById("dashboardView").classList.contains("hidden")) renderDashboard();
+    if(activeTab === "customers" && !document.getElementById("customersView").classList.contains("hidden")) renderCustomersList();
+    if(activeTab === "transactions" && !document.getElementById("transactionsView").classList.contains("hidden")) renderGlobalTransactions();
+    if(!document.getElementById("profileView").classList.contains("hidden") && currentCustomerProfileId) showCustomerProfile(currentCustomerProfileId);
+  }
+
+  function getCustomerBalance(custId) {
+    let balance = 0;
+    transactions.filter(t => t.customerId === custId).forEach(t => {
+      if (t.type === "Credit") balance += t.amount;
+      else balance -= t.amount;
+    });
+    return balance;
+  }
+
+  function getTotals() {
+    let totalIncome = 0, totalExpense = 0;
+    transactions.forEach(t => {
+      if (t.type === "Credit") totalIncome += t.amount;
+      else totalExpense += t.amount;
+    });
+    let totalBalance = customers.reduce((sum, c) => sum + getCustomerBalance(c.id), 0);
+    return { totalBalance, totalIncome, totalExpense };
+  }
+
+  function filterTransactionsByDateRange(transactionsArray, filterType, customStart = null, customEnd = null) {
+    const now = new Date();
+    let startDate, endDate = new Date();
+    if (filterType === 'today') {
+      startDate = new Date(now.setHours(0,0,0,0)); endDate = new Date(now.setHours(23,59,59,999));
+    } else if (filterType === 'week') {
+      const firstDay = new Date(now.setDate(now.getDate() - now.getDay()));
+      startDate = new Date(firstDay.setHours(0,0,0,0)); endDate = new Date();
+    } else if (filterType === 'month') {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1); endDate = new Date();
+    } else if (filterType === 'year') {
+      startDate = new Date(now.getFullYear(), 0, 1); endDate = new Date();
+    } else if (filterType === 'custom' && customStart && customEnd) {
+      startDate = new Date(customStart); endDate = new Date(customEnd); endDate.setHours(23,59,59);
+    } else {
+      return transactionsArray;
+    }
+    return transactionsArray.filter(t => new Date(t.date) >= startDate && new Date(t.date) <= endDate);
+  }
+
+  // Dashboard View
+  let reportFilter = 'all';
+  let reportStart = '', reportEnd = '';
+  function renderDashboard() {
+    const { totalBalance, totalIncome, totalExpense } = getTotals();
+    let filteredTxns = [...transactions];
+    if (reportFilter !== 'all') {
+      filteredTxns = filterTransactionsByDateRange(filteredTxns, reportFilter, reportStart, reportEnd);
+    }
+    filteredTxns.sort((a,b) => new Date(b.date) - new Date(a.date));
+    let filteredIncome = filteredTxns.filter(t=>t.type==="Credit").reduce((s,t)=>s+t.amount,0);
+    let filteredExpense = filteredTxns.filter(t=>t.type==="Debit").reduce((s,t)=>s+t.amount,0);
     
-    let students = [];
-    let currentId = null;
-    let isUrdu = true;
-    let isSubmitting = false;
-    let selectedClass = 'all';
-    let selectedSection = '';
-    let selectedStatus = 'current';
-    let cropper = null;
-    let currentUser = null;
+    let tableRows = filteredTxns.map(t => {
+      let cust = customers.find(c=>c.id===t.customerId);
+      return `<tr><td>${cust ? cust.name : '?'}</td><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${cust?.accountNumber || '-'}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td></tr>`;
+    }).join('');
+    let html = `
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-title">کل بیلنس</div><div class="stat-amount">${totalBalance.toLocaleString()} PKR</div></div>
+        <div class="stat-card"><div class="stat-title">کل آمد</div><div class="stat-amount income-color">+${totalIncome.toLocaleString()} PKR</div></div>
+        <div class="stat-card"><div class="stat-title">کل ادائیگی</div><div class="stat-amount expense-color">-${totalExpense.toLocaleString()} PKR</div></div>
+      </div>
+      <div class="filter-bar">
+        <span class="filter-chip ${reportFilter==='all'?'active':''}" data-filter="all">تمام</span>
+        <span class="filter-chip ${reportFilter==='today'?'active':''}" data-filter="today">آج</span>
+        <span class="filter-chip ${reportFilter==='week'?'active':''}" data-filter="week">اس ہفتہ</span>
+        <span class="filter-chip ${reportFilter==='month'?'active':''}" data-filter="month">اس ماہ</span>
+        <span class="filter-chip ${reportFilter==='year'?'active':''}" data-filter="year">اس سال</span>
+        <span class="filter-chip ${reportFilter==='custom'?'active':''}" data-filter="custom">اپنی تاریخ</span>
+      </div>
+      <div class="date-range ${reportFilter==='custom'?'':'hidden'}" style="margin:0 16px 12px; display:flex; gap:8px">
+        <input type="date" id="reportStart" value="${reportStart}"><input type="date" id="reportEnd" value="${reportEnd}"><button class="view-btn" id="applyReportFilter">لگائیں</button>
+      </div>
+      <div class="card">
+        <h4 style="font-size:0.9rem;">📊 فلٹر شدہ رپورٹ (${filteredTxns.length} ٹرانزیکشنز)</h4>
+        <div class="report-table">
+          <table style="width:100%">
+            <thead><tr><th>کسٹمر</th><th>تاریخ</th><th>اکاؤنٹ</th><th>قسم</th><th>رقم</th></tr></thead>
+            <tbody>${tableRows || '<tr><td colspan="5">کوئی ڈیٹا نہیں</td></tr>'}</tbody>
+          </table>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:0.8rem;">
+          <span>کل وصول: <strong class="income-color">${filteredIncome.toLocaleString()} PKR</strong></span>
+          <span>کل ادائیگی: <strong class="expense-color">${filteredExpense.toLocaleString()} PKR</strong></span>
+        </div>
+        <button id="shareReportPdfBtn" class="share-btn"><i class="fas fa-file-pdf"></i> رپورٹ بطور PDF شیئر کریں</button>
+      </div>
+    `;
+    document.getElementById("dashboardView").innerHTML = html;
+    document.querySelectorAll(".filter-chip").forEach(chip => {
+      chip.addEventListener("click", (e) => {
+        reportFilter = chip.dataset.filter;
+        if(reportFilter !== 'custom') { reportStart = reportEnd = ''; }
+        renderDashboard();
+      });
+    });
+    document.getElementById("applyReportFilter")?.addEventListener("click", () => {
+      reportStart = document.getElementById("reportStart").value;
+      reportEnd = document.getElementById("reportEnd").value;
+      if(reportStart && reportEnd) renderDashboard(); else alert("تاریخ کی حد منتخب کریں");
+    });
+    document.getElementById("shareReportPdfBtn")?.addEventListener("click", () => generateAndSharePDFReport(filteredTxns, filteredIncome, filteredExpense));
+  }
 
-    let lastSelectedClass = '';
-    let lastSelectedSection = '';
+  async function generateAndSharePDFReport(transactionsList, totalIn, totalOut) {
+    const element = document.createElement('div');
+    element.className = 'report-for-share';
+    let rows = transactionsList.map(t => {
+      let cust = customers.find(c=>c.id===t.customerId);
+      return `<tr><td>${cust?.name || '-'}</td><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${cust?.accountNumber || '-'}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td><td>${t.description || ''}</td></tr>`;
+    }).join('');
+    element.innerHTML = `
+      <h2 style="color:#4f46e5">نور احمد پرانا ٹائر ڈیلر کچلاک</h2>
+      <h3>ٹرانزیکشن رپورٹ</h3>
+      <p>تاریخ رپورٹ: ${new Date().toLocaleDateString('ur-PK')}</p>
+      <table border="1" cellpadding="5" style="width:100%; border-collapse:collapse">
+        <thead><tr><th>کسٹمر نام</th><th>تاریخ</th><th>اکاؤنٹ نمبر</th><th>قسم</th><th>رقم</th><th>تفصیل</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p><strong>کل وصول: ${totalIn.toLocaleString()} PKR</strong> | <strong>کل ادائیگی: ${totalOut.toLocaleString()} PKR</strong></p>
+    `;
+    document.body.appendChild(element);
+    try {
+      const canvas = await html2canvas(element, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+      if (navigator.share) {
+        const blob = await (await fetch(imgData)).blob();
+        await navigator.share({ title: 'بینک رپورٹ', files: [new File([blob], 'bank_report.png', { type: 'image/png' })] });
+      } else {
+        const link = document.createElement('a'); link.href = imgData; link.download = 'bank_report.png'; link.click(); alert("رپورٹ ڈاؤن لوڈ ہوگئی۔");
+      }
+    } catch(e) { alert("رپورٹ شیئر نہیں ہو سکی"); }
+    finally { element.remove(); }
+  }
 
-    const classList = ['کچی','پکی','دوئم','سوئم','چہارم','پنجم','ششم','ہفتم','ہشتم','نہم','دہم','فرسٹ ائیر','سیکنڈ ائیر'];
-    // Update to include 1st and 2nd year for sections
-    const sectionsWithClasses = ['ششم','ہفتم','ہشتم','نہم','دہم','فرسٹ ائیر','سیکنڈ ائیر'];
-    const sectionOptions = ['A','B','C'];
+  // Customers View
+  function renderCustomersList(search = "") {
+    let filtered = customers.filter(c => c.name.includes(search) || (c.phone && c.phone.includes(search)) || (c.accountNumber && c.accountNumber.includes(search)));
+    let html = `<div class="search-bar" style="margin:12px 16px; background:var(--surface); border-radius:40px; padding:6px 12px;"><i class="fas fa-search"></i><input type="text" id="custSearch" placeholder="تلاش کریں"></div><div class="customer-grid">`;
+    filtered.forEach(c => {
+      let balance = getCustomerBalance(c.id);
+      let avatar = c.profilePic ? `<img src="${c.profilePic}" class="circle-img" style="width:55px;height:55px">` : `<div style="width:55px;height:55px; border-radius:50%; background:var(--accent-light); display:flex; align-items:center; justify-content:center;"><i class="fas fa-user fa-2x"></i></div>`;
+      html += `<div class="customer-card" style="display:flex; align-items:center; gap:12px;">${avatar}<div style="flex:1"><h4>${c.name}</h4><p>${c.phone || ''} ${c.accountNumber || ''}</p><small>بیلنس: ${balance.toLocaleString()} PKR</small></div><button class="view-btn" data-id="${c.id}">پروفائل</button></div>`;
+    });
+    html += `</div>`;
+    document.getElementById("customersView").innerHTML = html;
+    document.getElementById("custSearch")?.addEventListener("input", e => renderCustomersList(e.target.value));
+    document.querySelectorAll("[data-id]").forEach(btn => btn.addEventListener("click", e => showCustomerProfile(btn.dataset.id)));
+  }
 
-    let currentClassIndex = 0;
-    let rotationInterval;
+  // Edit Customer Profile (Direct Base64 Update)
+  function editCustomerProfile(customer) {
+    const modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.innerHTML = `<div class="modal-content"><h3>پروفائل میں ترمیم</h3>
+    <input id="editName" value="${customer.name}" placeholder="نام (لازمی)">
+    <input id="editPhone" value="${customer.phone || ''}" placeholder="فون نمبر (اختیاری)">
+    <input id="editAccount" value="${customer.accountNumber || ''}" placeholder="اکاؤنٹ نمبر (اختیاری)">
+    <label>پروفائل تصویر (اختیاری)</label><input type="file" id="editProfilePic" accept="image/*">
+    ${customer.profilePic ? `<img src="${customer.profilePic}" class="circle-img" style="width:60px">` : ''}
+    <button id="saveEditBtn" class="btn-primary">محفوظ کریں</button><button id="cancelEditBtn" class="view-btn">منسوخ</button></div>`;
+    document.body.appendChild(modal);
 
-    let currentPhotoBlob = null;
-
-    const translations = {
-        en: { 
-            schoolName:"گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین", 
-            estd:"📅 Since 1890 • پشین", 
-            total:"Total Students", 
-            classes:"Classes", 
-            add:"Add Student", 
-            records:"Records", 
-            admNo:"Admission No", 
-            studentName:"Student Name", 
-            selectClass:"Select Class", 
-            fatherName:"Father's Name",
-            caste:"Caste/Tribe",
-            phone:"Phone Number", 
-            save:"Save to Firebase", 
-            update:"Update Record", 
-            search:"🔍 Search students...", 
-            home:"Home", 
-            students:"Students", 
-            print:"Print", 
-            thermal:"Share Info", // Changed from Thermal Print
-            edit:"Edit", 
-            delete:"Delete", 
-            pass:"Pass", 
-            fail:"Fail",
-            left:"Left School",
-            current:"Current",
-            all:"All",
-            leftStatus:"Left",
-            certificate:"Certificate of Enrollment", 
-            thermalTitle:"تصدیقی سرٹیفیکٹ",
-            issuedDate:"Issue Date", 
-            principal:"Principal", 
-            class:"Class", 
-            admNoLabel:"Admission No", 
-            fatherNameLabel:"Father's Name",
-            casteLabel:"Caste/Tribe",
-            phoneLabel:"Phone", 
-            dobLabel:"Date of Birth", 
-            dobInWordsLabel:"Date of Birth in Words",
-            admissionDateLabel:"Admission Date", 
-            saving:"Saving...", 
-            updating:"Updating...", 
-            uploading:"Uploading photo...",
-            saved:"✅ Data saved successfully!", 
-            updated:"✅ Record updated successfully!", 
-            fillAllFields:"Please fill all required fields", 
-            photoHint:"📸 Choose camera or gallery - Photo will be cropped", 
-            filterTitle:"Filter by Class", 
-            allClasses:"All Classes", 
-            noStudents:"No students found", 
-            clearFilter:"Clear",
-            duplicateAdmNo:"❌ Admission number already exists. Please use a different number.",
-            loginTitle:"Login",
-            emailLabel:"Email Address",
-            passwordLabel:"Password",
-            loginBtn:"Login",
-            forgotPassword:"Forgot Password?",
-            orText:"OR",
-            guestLogin:"Continue as Guest",
-            noAccount:"Don't have an account?",
-            contactAdmin:"Contact Admin",
-            logout:"Logout",
-            loginSuccess:"Login successful! Redirecting...",
-            loginError:"Invalid email or password",
-            guestMode:"Guest Mode - Limited Access",
-            emailRequired:"Please enter your email",
-            passwordRequired:"Please enter your password",
-            promoteConfirmPass:"Are you sure you want to mark this student as PASS and promote to next class?",
-            promoteConfirmFail:"Are you sure you want to mark this student as FAIL? (Class will remain same)",
-            maxClass:"This student is already in the highest class.",
-            leftConfirm:"Are you sure you want to mark this student as LEFT SCHOOL? (They will be moved to left records)",
-            alreadyLeft:"This student has already left school.",
-            classNotFound:"Student's class is not recognized. Cannot promote.",
-            section:"Section"
-        },
-        ur: { 
-            schoolName:"گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین", 
-            estd:"📅 1890ء سے • پشین", 
-            total:"کل طلباء", 
-            classes:"کلاسز", 
-            add:"اندراج", 
-            records:"ریکارڈ", 
-            admNo:"داخلہ نمبر", 
-            studentName:"طالب علم کا نام", 
-            selectClass:"کلاس منتخب کریں", 
-            fatherName:"والد کا نام",
-            caste:"قوم / ذات",
-            phone:"فون نمبر", 
-            save:"محفوظ کریں", 
-            update:"اپ ڈیٹ کریں", 
-            search:"🔍 تلاش کریں...", 
-            home:"ہوم", 
-            students:"طلباء", 
-            print:"پرنٹ", 
-            thermal:"شیئر کریں", // Changed from Thermal Print
-            edit:"ترمیم", 
-            delete:"حذف", 
-            pass:"پاس", 
-            fail:"فیل",
-            left:"سکول چھوڑ دیا",
-            current:"موجودہ",
-            all:"تمام",
-            leftStatus:"سابقہ",
-            certificate:"داخلہ سرٹیفکیٹ", 
-            thermalTitle:"تصدیقی سرٹیفیکٹ",
-            issuedDate:"تاریخ اجراء", 
-            principal:"پرنسپل", 
-            class:"کلاس", 
-            admNoLabel:"داخلہ نمبر", 
-            fatherNameLabel:"والد کا نام",
-            casteLabel:"قوم / ذات",
-            phoneLabel:"فون نمبر", 
-            dobLabel:"تاریخ پیدائش", 
-            dobInWordsLabel:"تاریخ پیدائش الفاظ میں",
-            admissionDateLabel:"تاریخ داخلہ", 
-            saving:"محفوظ ہو رہا ہے...", 
-            updating:"اپ ڈیٹ ہو رہا ہے...", 
-            uploading:"تصویر اپ لوڈ ہو رہی ہے...",
-            saved:"✅ ڈیٹا کامیابی سے محفوظ ہو گیا!", 
-            updated:"✅ ریکارڈ کامیابی سے اپ ڈیٹ ہو گیا!", 
-            fillAllFields:"براہ کرم تمام فیلڈز بھریں", 
-            photoHint:"📸 کیمرہ یا گیلری سے انتخاب کریں - تصویر کٹے گی", 
-            filterTitle:"کلاس کے مطابق فلٹر کریں", 
-            allClasses:"تمام کلاسیں", 
-            noStudents:"کوئی طالب علم نہیں ملا", 
-            clearFilter:"صاف کریں",
-            duplicateAdmNo:"❌ داخلہ نمبر پہلے سے موجود ہے۔ براہ کرم دوسرا نمبر استعمال کریں۔",
-            loginTitle:"لاگ ان",
-            emailLabel:"ای میل ایڈریس",
-            passwordLabel:"پاس ورڈ",
-            loginBtn:"لاگ ان",
-            forgotPassword:"پاس ورڈ بھول گئے؟",
-            orText:"یا",
-            guestLogin:"بطور مہمان جاری رکھیں",
-            noAccount:"اکاؤنٹ نہیں ہے؟",
-            contactAdmin:"ایڈمن سے رابطہ کریں",
-            logout:"لاگ آؤٹ",
-            loginSuccess:"لاگ ان کامیاب! ری ڈائریکٹ ہو رہا ہے...",
-            loginError:"غلط ای میل یا پاس ورڈ",
-            guestMode:"مہمان موڈ - محدود رسائی",
-            emailRequired:"براہ کرم اپنا ای میل درج کریں",
-            passwordRequired:"براہ کرم اپنا پاس ورڈ درج کریں",
-            promoteConfirmPass:"کیا آپ اس طالب علم کو پاس کر کے اگلی کلاس میں بھیجنا چاہتے ہیں؟",
-            promoteConfirmFail:"کیا آپ اس طالب علم کو فیل قرار دینا چاہتے ہیں؟ (کلاس وہی رہے گی)",
-            maxClass:"یہ طالب علم پہلے ہی آخری کلاس میں ہے۔",
-            leftConfirm:"کیا آپ اس طالب علم کو سکول چھوڑنے والا قرار دینا چاہتے ہیں؟ (یہ سابقہ طلباء میں شامل ہو جائے گا)",
-            alreadyLeft:"یہ طالب علم پہلے ہی سکول چھوڑ چکا ہے۔",
-            classNotFound:"طالب علم کی کلاس تسلیم نہیں ہوئی۔ پاس نہیں کیا جا سکتا۔",
-            section:"سیکشن"
-        }
+    document.getElementById("saveEditBtn").onclick = async () => {
+      let newName = modal.querySelector("#editName").value.trim();
+      if(!newName) { alert("نام لازمی ہے"); return; }
+      const btn = document.getElementById("saveEditBtn");
+      
+      const file = modal.querySelector("#editProfilePic").files[0];
+      if(file) {
+        btn.disabled = true; btn.innerText = "محفوظ ہو رہا ہے...";
+        try {
+          customer.profilePic = await getBase64(file);
+        } catch(err) { alert("تصویر میں مسئلہ ہے۔"); }
+      }
+      
+      customer.name = newName;
+      customer.phone = modal.querySelector("#editPhone").value;
+      customer.accountNumber = modal.querySelector("#editAccount").value;
+      saveCustomers();
+      modal.remove();
     };
+    document.getElementById("cancelEditBtn").onclick = () => modal.remove();
+  }
 
-    function showLogin() {
-        e('loginSection').style.display = 'flex';
-        e('mainContent').style.display = 'none';
-        e('bottomNav').style.display = 'none';
-        e('logoutBtn').style.display = 'none';
-    }
+  async function shareCustomerReportAsImage(customer, transactionsList, totalAdded, totalWithdrawn, balance) {
+    const element = document.createElement('div');
+    element.className = 'report-for-share';
+    element.style.padding = '20px'; element.style.background = 'white'; element.style.color = 'black';
+    let rows = transactionsList.map(t => {
+      return `<tr><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td><td>${t.description || ''}</td></tr>`;
+    }).join('');
+    element.innerHTML = `
+      <h2 style="color:#4f46e5">نور احمد ٹائرز</h2><h3>کسٹمر رپورٹ: ${customer.name}</h3>
+      <p><strong>فون:</strong> ${customer.phone || '-'} | <strong>اکاؤنٹ:</strong> ${customer.accountNumber || '-'}</p>
+      <p>کل وصول: ${totalAdded.toLocaleString()} PKR | کل ادائیگی: ${totalWithdrawn.toLocaleString()} PKR | موجودہ بیلنس: ${balance.toLocaleString()} PKR</p>
+      <table border="1" cellpadding="5" style="width:100%; border-collapse:collapse"><thead><tr><th>تاریخ</th><th>قسم</th><th>رقم</th><th>تفصیل</th></tr></thead><tbody>${rows}</tbody></table>
+      <p>تاریخ رپورٹ: ${new Date().toLocaleDateString('ur-PK')}</p>
+    `;
+    document.body.appendChild(element);
+    try {
+      const canvas = await html2canvas(element, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+      if (navigator.share) {
+        const blob = await (await fetch(imgData)).blob();
+        await navigator.share({ title: `${customer.name} کی رپورٹ`, files: [new File([blob], 'customer_report.png', { type: 'image/png' })] });
+      } else {
+        const link = document.createElement('a'); link.href = imgData; link.download = 'customer_report.png'; link.click(); alert("رپورٹ ڈاؤن لوڈ ہوگئی۔");
+      }
+    } catch(e) { alert("رپورٹ شیئر نہیں ہو سکی"); }
+    finally { element.remove(); }
+  }
+
+  let profileFilter = 'all'; let profileStart = '', profileEnd = '';
+  function showCustomerProfile(custId) {
+    currentCustomerProfileId = custId;
+    const cust = customers.find(c=>c.id===custId);
+    if(!cust) return;
+    let custTxns = transactions.filter(t=>t.customerId===custId);
+    if(profileFilter !== 'all') { custTxns = filterTransactionsByDateRange(custTxns, profileFilter, profileStart, profileEnd); }
+    custTxns.sort((a,b)=>new Date(a.date)-new Date(b.date));
     
-    function showMainContent(user) {
-        currentUser = user;
-        e('loginSection').style.display = 'none';
-        e('mainContent').style.display = 'block';
-        e('bottomNav').style.display = 'flex';
-        e('logoutBtn').style.display = 'block';
-        setAutoAdmissionDate();
-        if (user && user.isAnonymous) {
-            showMessage(translations[isUrdu ? 'ur' : 'en'].guestMode, true);
-        }
-        startRotation();
-    }
+    let totalAdded = custTxns.filter(t=>t.type==="Credit").reduce((s,t)=>s+t.amount,0);
+    let totalWithdrawn = custTxns.filter(t=>t.type==="Debit").reduce((s,t)=>s+t.amount,0);
+    let balance = totalAdded - totalWithdrawn;
+    let running = 0;
     
+    let txnHtml = custTxns.map(t => {
+      if(t.type==="Credit") running += t.amount; else running -= t.amount;
+      // Show base64 receipt as thumbnail
+      let receiptHtml = t.receiptUrl ? `<br><img src="${t.receiptUrl}" style="max-width:120px; border-radius:10px; cursor:pointer;" onclick="window.open(this.src)">` : '';
+      return `<div class="transaction-item"><div><small>${new Date(t.date).toLocaleString()}</small><div>${t.description} ${receiptHtml}</div></div><div class="${t.type==="Credit"?"credit":"debit"}">${t.type==="Credit"?"+":"-"} ${t.amount.toLocaleString()} PKR</div><div class="running-balance">بقایا: ${running.toLocaleString()} PKR</div><div><i class="fas fa-edit edit-txn-prof edit-icon" data-id="${t.id}"></i> <i class="fas fa-trash delete-txn-prof delete-icon" data-id="${t.id}"></i></div></div>`;
+    }).join("");
+    
+    let avatar = cust.profilePic ? `<img src="${cust.profilePic}" class="circle-img">` : `<div class="circle-img" style="background:var(--accent-light); display:flex; align-items:center; justify-content:center;"><i class="fas fa-user fa-3x"></i></div>`;
+    let html = `<button class="back-button" id="backBtn"><i class="fas fa-arrow-right"></i> واپس</button>
+    <div class="card" style="text-align:center">${avatar}<h2>${cust.name}</h2><p>📞 ${cust.phone || 'فون نہیں'} | 🏦 ${cust.accountNumber || 'اکاؤنٹ نہیں'}</p><div style="font-size:1.5rem; font-weight:700;">${balance.toLocaleString()} PKR</div><button id="editProfileBtn" class="view-btn" style="margin-top:8px"><i class="fas fa-pen"></i> پروفائل ایڈٹ</button></div>
+    <div style="display:flex; gap:12px; margin:0 16px"><button id="receiveBtn" class="view-btn" style="background:#10b98120"><i class="fas fa-arrow-down"></i> اس نے بھیجے</button><button id="sendBtn" class="view-btn" style="background:#ef444420"><i class="fas fa-arrow-up"></i> اپ نے بھیجے</button><button id="shareCustReportBtn" class="view-btn" style="background:var(--accent); color:white"><i class="fas fa-share-alt"></i> رپورٹ شیئر کریں</button></div>
+    <div class="filter-bar" style="margin:12px 16px">
+      <span class="filter-chip ${profileFilter==='all'?'active':''}" data-pfilter="all">تمام</span>
+      <span class="filter-chip ${profileFilter==='today'?'active':''}" data-pfilter="today">آج</span>
+      <span class="filter-chip ${profileFilter==='week'?'active':''}" data-pfilter="week">ہفتہ</span>
+      <span class="filter-chip ${profileFilter==='month'?'active':''}" data-pfilter="month">ماہ</span>
+      <span class="filter-chip ${profileFilter==='year'?'active':''}" data-pfilter="year">سال</span>
+      <span class="filter-chip ${profileFilter==='custom'?'active':''}" data-pfilter="custom">تاریخ</span>
+    </div>
+    <div id="profileCustomRange" class="date-range ${profileFilter==='custom'?'':'hidden'}" style="margin:0 16px 12px; display:flex; gap:8px"><input type="date" id="profStart" value="${profileStart}"><input type="date" id="profEnd" value="${profileEnd}"><button class="view-btn" id="applyProfFilter">لگائیں</button></div>
+    <div class="card"><h4>ٹرانزیکشن ہسٹری (بقایا بیلنس کے ساتھ)</h4>${txnHtml || "کوئی ٹرانزیکشن نہیں"}</div>`;
+    
+    document.getElementById("profileView").innerHTML = html;
+    document.getElementById("backBtn").onclick = () => { currentCustomerProfileId = null; switchTab("customers"); };
+    document.getElementById("editProfileBtn").onclick = () => editCustomerProfile(cust);
+    document.getElementById("receiveBtn").onclick = () => openTransactionModal(custId, "Credit", "اس نے بھیجے");
+    document.getElementById("sendBtn").onclick = () => openTransactionModal(custId, "Debit", "اپ نے بھیجے");
+    document.getElementById("shareCustReportBtn").onclick = () => shareCustomerReportAsImage(cust, custTxns, totalAdded, totalWithdrawn, balance);
+    
+    document.querySelectorAll("[data-pfilter]").forEach(chip => {
+      chip.addEventListener("click", (e) => {
+        profileFilter = chip.dataset.pfilter;
+        if(profileFilter !== 'custom') { profileStart = profileEnd = ''; }
+        showCustomerProfile(custId);
+      });
+    });
+    
+    document.getElementById("applyProfFilter")?.addEventListener("click", () => {
+      profileStart = document.getElementById("profStart").value; profileEnd = document.getElementById("profEnd").value;
+      if(profileStart && profileEnd) showCustomerProfile(custId); else alert("تاریخ کی حد منتخب کریں");
+    });
+    
+    document.querySelectorAll(".edit-txn-prof").forEach(btn => btn.addEventListener("click", e => openEditTransactionModal(btn.dataset.id, custId)));
+    document.querySelectorAll(".delete-txn-prof").forEach(btn => btn.addEventListener("click", e => { if(confirm("کیا آپ یہ ٹرانزیکشن حذف کرنا چاہتے ہیں؟")) deleteTransaction(btn.dataset.id); }));
+    
+    hideAllViews(); document.getElementById("profileView").classList.remove("hidden");
+  }
+
+  function deleteTransaction(txnId) {
+    transactions = transactions.filter(t => t.id !== txnId);
+    saveTransactions();
+  }
+
+  // Transaction Modal (Direct Base64 Storage)
+  function openTransactionModal(custId, type, buttonLabel) {
+    const modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.innerHTML = `<div class="modal-content"><h3>${buttonLabel}</h3>
+    <input type="number" id="amount" placeholder="رقم PKR"><input type="text" id="desc" placeholder="تفصیل"><input type="file" id="receipt" accept="image/*"><button id="confirmTxn" class="btn-primary">تصدیق</button><button id="cancelTxn" class="view-btn">منسوخ</button></div>`;
+    document.body.appendChild(modal);
+    
+    document.getElementById("confirmTxn").onclick = async () => {
+      let amount = parseFloat(modal.querySelector("#amount").value);
+      if(isNaN(amount) || amount<=0) { alert("درست رقم درج کریں"); return; }
+      
+      const file = modal.querySelector("#receipt").files[0];
+      const btn = document.getElementById("confirmTxn");
+      
+      btn.disabled = true; btn.innerText = "محفوظ ہو رہا ہے...";
+
+      let receiptUrl = "";
+      if(file) {
+        try { receiptUrl = await getBase64(file); } 
+        catch(err) { alert("تصویر میں مسلئہ"); return; }
+      }
+      
+      transactions.push({ 
+        id: generateId(), 
+        customerId: custId, 
+        date: new Date().toISOString(), 
+        amount, 
+        type, 
+        description: modal.querySelector("#desc").value || (type==="Credit"?"وصول":"ادائیگی"), 
+        receiptUrl: receiptUrl 
+      });
+      saveTransactions();
+      modal.remove();
+    };
+    document.getElementById("cancelTxn").onclick = () => modal.remove();
+  }
+
+  function openEditTransactionModal(txnId, custId) {
+    const txn = transactions.find(t=>t.id===txnId);
+    if(!txn) return;
+    const modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.innerHTML = `<div class="modal-content"><h3>ٹرانزیکشن میں ترمیم</h3><input id="editAmount" value="${txn.amount}" placeholder="رقم"><select id="editType"><option ${txn.type==="Credit"?"selected":""} value="Credit">وصول</option><option ${txn.type==="Debit"?"selected":""} value="Debit">ادائیگی</option></select><input id="editDesc" value="${txn.description}" placeholder="تفصیل"><input type="datetime-local" id="editDate" value="${new Date(txn.date).toISOString().slice(0,16)}"><input type="file" id="editReceipt"><button id="updateBtn" class="btn-primary">اپ ڈیٹ</button><button id="cancelBtn" class="view-btn">منسوخ</button></div>`;
+    document.body.appendChild(modal);
+    
+    document.getElementById("updateBtn").onclick = async () => {
+      const btn = document.getElementById("updateBtn");
+      const file = modal.querySelector("#editReceipt").files[0];
+      
+      if(file) {
+        btn.disabled = true; btn.innerText = "اپلوڈ ہو رہا ہے...";
+        try { txn.receiptUrl = await getBase64(file); } catch(e){}
+      }
+
+      txn.amount = parseFloat(modal.querySelector("#editAmount").value);
+      txn.type = modal.querySelector("#editType").value;
+      txn.description = modal.querySelector("#editDesc").value;
+      txn.date = new Date(modal.querySelector("#editDate").value).toISOString();
+      
+      saveTransactions();
+      modal.remove();
+    };
+    document.getElementById("cancelBtn").onclick = () => modal.remove();
+  }
+
+  function renderGlobalTransactions() {
+    let filtered = [...transactions].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    let html = `<div class="txn-list">` + filtered.map(t => {
+      let cust = customers.find(c=>c.id===t.customerId);
+      let receiptHtml = t.receiptUrl ? `<br><img src="${t.receiptUrl}" style="max-width:100px; border-radius:8px; margin-top:5px;">` : '';
+      return `<div class="transaction-card"><div><strong>${cust?.name}</strong><br><small>${new Date(t.date).toLocaleString()}</small><div>${t.description} ${receiptHtml}</div></div><div class="${t.type==="Credit"?"credit":"debit"}">${t.type==="Credit"?"+":"-"} ${t.amount.toLocaleString()} PKR</div><div><i class="fas fa-edit edit-txn edit-icon" data-id="${t.id}"></i> <i class="fas fa-trash delete-txn delete-icon" data-id="${t.id}"></i></div></div>`;
+    }).join('') + `</div>`;
+    document.getElementById("transactionsView").innerHTML = html;
+    document.querySelectorAll(".edit-txn").forEach(btn => btn.addEventListener("click", e => openEditTransactionModal(btn.dataset.id, null)));
+    document.querySelectorAll(".delete-txn").forEach(btn => btn.addEventListener("click", e => { if(confirm("حذف کریں؟")) deleteTransaction(btn.dataset.id); }));
+  }
+
+  function renderShareSection() {
+    let html = `<div class="card" style="text-align:center"><h3>📱 بینک کی معلومات شیئر کریں</h3>
+    <div><label>بینک کا نام</label><input type="text" id="bankName" value="${bankDetails.name}"></div>
+    <div><label>اکاؤنٹ نمبر</label><input type="text" id="bankAccount" value="${bankDetails.account}"></div>
+    <div><label>لوگو / تصویر</label><input type="file" id="bankLogo" accept="image/*">${bankDetails.logo ? `<img src="${bankDetails.logo}" class="circle-img" style="width:60px; margin-top:8px">` : ''}</div>
+    <button id="saveBankDetails" class="btn-primary">محفوظ کریں اور QR اپ ڈیٹ کریں</button>
+    <div id="qrcode" style="display:flex; justify-content:center; margin:16px 0"></div>
+    <button id="shareQRBtn" class="share-btn"><i class="fas fa-share-alt"></i> QR کوڈ شیئر کریں</button>
+    </div>`;
+    document.getElementById("shareView").innerHTML = html;
+    generateQRCode();
+    
+    document.getElementById("saveBankDetails").onclick = async () => {
+      const btn = document.getElementById("saveBankDetails");
+      bankDetails.name = document.getElementById("bankName").value;
+      bankDetails.account = document.getElementById("bankAccount").value;
+      const file = document.getElementById("bankLogo").files[0];
+      
+      if(file) {
+        btn.disabled = true; btn.innerText = "محفوظ ہو رہا ہے...";
+        try { bankDetails.logo = await getBase64(file); } catch(e){}
+      }
+      saveBankDetails();
+      generateQRCode();
+      btn.disabled = false; btn.innerText = "محفوظ کریں اور QR اپ ڈیٹ کریں";
+    };
+    
+    document.getElementById("shareQRBtn").onclick = async () => {
+      const qrCanvas = document.querySelector("#qrcode canvas");
+      if(qrCanvas) {
+        qrCanvas.toBlob(async (blob) => {
+          if(navigator.share) await navigator.share({ title: "بینک کیو آر کوڈ", files: [new File([blob], "bank_qr.png", { type: "image/png" })] });
+          else { const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "bank_qr.png"; link.click(); URL.revokeObjectURL(link.href); alert("تصویر ڈاؤن لوڈ ہوگئی"); }
+        });
+      }
+    };
+  }
+  function generateQRCode() {
+    document.getElementById("qrcode").innerHTML = "";
+    let data = `بینک: ${bankDetails.name}\nاکاؤنٹ: ${bankDetails.account}\nنور احمد ٹائرز`;
+    new QRCode(document.getElementById("qrcode"), { text: data, width: 180, height: 180 });
+  }
+
+  let activeTab = "dashboard";
+  function hideAllViews() {
+    document.getElementById("dashboardView").classList.add("hidden");
+    document.getElementById("customersView").classList.add("hidden");
+    document.getElementById("transactionsView").classList.add("hidden");
+    document.getElementById("profileView").classList.add("hidden");
+    document.getElementById("shareView").classList.add("hidden");
+  }
+  
+  function switchTab(tab) {
+    activeTab = tab; hideAllViews();
+    if(tab === "dashboard") { renderDashboard(); document.getElementById("dashboardView").classList.remove("hidden"); }
+    if(tab === "customers") { renderCustomersList(); document.getElementById("customersView").classList.remove("hidden"); }
+    if(tab === "transactions") { renderGlobalTransactions(); document.getElementById("transactionsView").classList.remove("hidden"); }
+    if(tab === "share") { renderShareSection(); document.getElementById("shareView").classList.remove("hidden"); }
+    document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
+    document.querySelector(`.nav-item[data-nav="${tab}"]`).classList.add("active");
+    const fab = document.getElementById("fabAddCustomer");
+    if(tab === "customers") fab.classList.remove("hidden"); else fab.classList.add("hidden");
+  }
+
+  function initDarkMode() {
+    if(localStorage.getItem("darkModeNoor")==="true") document.body.classList.add("dark");
+    document.getElementById("darkModeToggle").addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("darkModeNoor", document.body.classList.contains("dark"));
+    });
+  }
+  
+  function initAuth() {
     auth.onAuthStateChanged((user) => {
-        if (user) {
-            showMainContent(user);
-        } else {
-            showLogin();
-            if (rotationInterval) clearInterval(rotationInterval);
-        }
-    });
-    
-    e('loginForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const email = e('email').value.trim();
-        const password = e('password').value;
-        const t = translations[isUrdu ? 'ur' : 'en'];
-        if (!email) { showLoginError(t.emailRequired); return; }
-        if (!password) { showLoginError(t.passwordRequired); return; }
-        e('loginBtn').disabled = true;
-        e('loginBtn').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.loginBtn}`;
-        try {
-            await auth.signInWithEmailAndPassword(email, password);
-            showLoginSuccess(t.loginSuccess);
-        } catch (error) {
-            showLoginError(t.loginError);
-            e('loginBtn').disabled = false;
-            e('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t.loginBtn}`;
-        }
-    });
-    
-    e('guestLoginBtn').addEventListener('click', async () => {
-        const t = translations[isUrdu ? 'ur' : 'en'];
-        e('guestLoginBtn').disabled = true;
-        e('guestLoginBtn').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.guestLogin}`;
-        try {
-            await auth.signInAnonymously();
-            showLoginSuccess(t.guestMode);
-        } catch (error) {
-            showLoginError('Guest login failed');
-            e('guestLoginBtn').disabled = false;
-            e('guestLoginBtn').innerHTML = `<i class="fas fa-user"></i> ${t.guestLogin}`;
-        }
-    });
-    
-    e('logoutBtn').addEventListener('click', async () => {
-        try { await auth.signOut(); } catch (error) { console.error('Logout error:', error); }
-    });
-    
-    e('forgotPassword').addEventListener('click', (e) => {
-        e.preventDefault();
-        const email = prompt(isUrdu ? 'اپنا ای میل ایڈریس درج کریں:' : 'Enter your email address:');
-        if (email) {
-            auth.sendPasswordResetEmail(email)
-                .then(() => alert(isUrdu ? 'پاس ورڈ ری سیٹ ای میل بھیج دیا گیا ہے' : 'Password reset email sent'))
-                .catch((error) => alert(isUrdu ? 'غلطی: ' + error.message : 'Error: ' + error.message));
-        }
-    });
-    
-    e('contactAdmin').addEventListener('click', (e) => {
-        e.preventDefault();
-        alert(isUrdu ? 'براہ کرم ایڈمن سے رابطہ کریں: admin@gmhss.edu.pk' : 'Please contact admin: admin@gmhss.edu.pk');
-    });
-    
-    function showLoginError(message) {
-        e('loginError').style.display = 'block';
-        e('loginError').textContent = message;
-        e('loginSuccess').style.display = 'none';
-    }
-    
-    function showLoginSuccess(message) {
-        e('loginSuccess').style.display = 'block';
-        e('loginSuccess').textContent = message;
-        e('loginError').style.display = 'none';
-    }
-
-    function setLanguage(lang) {
-        const t = translations[lang];
-        if (e('loginTitleText')) e('loginTitleText').textContent = t.loginTitle;
-        if (e('emailLabel')) e('emailLabel').textContent = t.emailLabel;
-        if (e('passwordLabel')) e('passwordLabel').textContent = t.passwordLabel;
-        if (e('loginBtnText')) e('loginBtnText').textContent = t.loginBtn;
-        if (e('forgotPassword')) e('forgotPassword').textContent = t.forgotPassword;
-        if (e('orText')) e('orText').textContent = t.orText;
-        if (e('guestLoginText')) e('guestLoginText').textContent = t.guestLogin;
-        if (e('noAccountText')) e('noAccountText').textContent = t.noAccount;
-        if (e('contactAdmin')) e('contactAdmin').textContent = t.contactAdmin;
-        if (e('logoutText')) e('logoutText').textContent = t.logout;
-        if (e('schoolNameUrdu')) e('schoolNameUrdu').textContent = t.schoolName;
-        if (e('estdBadge')) e('estdBadge').innerHTML = t.estd;
-        if (e('totalLabel')) e('totalLabel').textContent = t.total;
-        if (e('classesLabel')) e('classesLabel').textContent = t.classes;
-        if (e('tabAddText')) e('tabAddText').textContent = t.add;
-        if (e('tabListText')) e('tabListText').textContent = t.records;
-        if (e('admNo')) e('admNo').placeholder = t.admNo;
-        if (e('name')) e('name').placeholder = t.studentName;
-        if (e('fatherName')) e('fatherName').placeholder = t.fatherName;
-        if (e('caste')) e('caste').placeholder = t.caste;
-        if (e('phone')) e('phone').placeholder = t.phone;
-        if (e('dobInWords')) e('dobInWords').placeholder = t.dobInWordsLabel;
-        if (e('saveBtn')) e('saveBtn').innerHTML = `<i class="fas fa-save"></i> ${t.save}`;
-        if (e('updateBtn')) e('updateBtn').innerHTML = `<i class="fas fa-edit"></i> ${t.update}`;
-        if (e('searchInput')) e('searchInput').placeholder = t.search;
-        if (e('navHomeText')) e('navHomeText').textContent = t.home;
-        if (e('navStudentsText')) e('navStudentsText').textContent = t.students;
-        if (e('photoHint')) e('photoHint').innerHTML = `<i class="fas fa-info-circle"></i> ${t.photoHint}`;
-        if (e('filterTitle')) e('filterTitle').innerHTML = `<i class="fas fa-filter"></i> ${t.filterTitle}`;
-        if (e('clearFilterText')) e('clearFilterText').textContent = t.clearFilter;
-        
-        const statusBtns = document.querySelectorAll('.status-btn');
-        if (statusBtns.length >= 3) {
-            statusBtns[0].textContent = t.current;
-            statusBtns[1].textContent = t.all;
-            statusBtns[2].textContent = t.leftStatus;
-        }
-        
-        const selectClassOption = document.querySelector('#class option[value=""]');
-        if (selectClassOption) selectClassOption.textContent = t.selectClass;
-        
-        if (lang === 'ur') {
-            document.body.classList.add('urdu-mode');
-            document.body.classList.add('urdu-text');
-        } else {
-            document.body.classList.remove('urdu-mode');
-            document.body.classList.remove('urdu-text');
-        }
-        
-        renderClassFilter(); 
-        renderList();
-        updateRotatingCard();
-    }
-
-    e('loginBtnEnglish').addEventListener('click', () => { 
-        isUrdu = false; 
-        setLanguage('en'); 
-        e('loginBtnEnglish').classList.add('active'); 
-        e('loginBtnUrdu').classList.remove('active'); 
-        e('btnEnglish').classList.add('active'); 
-        e('btnUrdu').classList.remove('active'); 
-    });
-    
-    e('loginBtnUrdu').addEventListener('click', () => { 
-        isUrdu = true; 
-        setLanguage('ur'); 
-        e('loginBtnUrdu').classList.add('active'); 
-        e('loginBtnEnglish').classList.remove('active'); 
-        e('btnUrdu').classList.add('active'); 
-        e('btnEnglish').classList.remove('active'); 
+      if (user) {
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("appContainer").classList.remove("hidden");
+        loadData(); 
+        switchTab("dashboard");
+      } else {
+        document.getElementById("loginContainer").style.display = "flex";
+        document.getElementById("appContainer").classList.add("hidden");
+        hideAllViews();
+      }
     });
 
-    e('btnEnglish').addEventListener('click', () => { 
-        isUrdu = false; 
-        setLanguage('en'); 
-        e('btnEnglish').classList.add('active'); 
-        e('btnUrdu').classList.remove('active'); 
-        e('loginBtnEnglish').classList.add('active'); 
-        e('loginBtnUrdu').classList.remove('active'); 
-    });
-    
-    e('btnUrdu').addEventListener('click', () => { 
-        isUrdu = true; 
-        setLanguage('ur'); 
-        e('btnUrdu').classList.add('active'); 
-        e('btnEnglish').classList.remove('active'); 
-        e('loginBtnUrdu').classList.add('active'); 
-        e('loginBtnEnglish').classList.remove('active'); 
-    });
+    document.getElementById("loginBtn").onclick = () => {
+      const btn = document.getElementById("loginBtn");
+      let email = document.getElementById("loginEmail").value.trim();
+      let pwd = document.getElementById("loginPassword").value;
+      
+      if (!email || !pwd) { alert("براہ کرم ای میل اور پاس ورڈ درج کریں۔"); return; }
 
-    document.querySelectorAll('.status-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            selectedStatus = this.dataset.status;
-            renderList();
+      btn.disabled = true; btn.innerText = "لاگ ان ہو رہا ہے...";
+      auth.signInWithEmailAndPassword(email, pwd)
+        .catch((error) => {
+          btn.disabled = false; btn.innerText = "لاگ ان";
+          alert("لاگ ان ناکام: " + error.message);
         });
-    });
-
-    function formatDate(dateString) {
-        if (!dateString) return '';
-        const parts = dateString.split('-');
-        if (parts.length === 3) {
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        }
-        return dateString;
-    }
-
-    function dateToWords(dateString) {
-        if (!dateString) return '';
-        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-        const urduMonths = ['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر'];
-        const parts = dateString.split('-');
-        if (parts.length !== 3) return '';
-        const year = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const day = parseInt(parts[2], 10);
-        if (isNaN(year) || isNaN(month) || isNaN(day)) return '';
-        if (isUrdu) {
-            return `${convertToUrduWords(day)} ${urduMonths[month]} ${convertYearToUrduWords(year)}`;
-        } else {
-            const dayWord = getOrdinalWord(day);
-            const monthWord = months[month];
-            const yearWord = convertYearToWords(year);
-            return `${dayWord} ${monthWord} ${yearWord}`;
-        }
-    }
-    
-    function getOrdinalWord(num) {
-        const ordinals = ['First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth','Eleventh','Twelfth','Thirteenth','Fourteenth','Fifteenth','Sixteenth','Seventeenth','Eighteenth','Nineteenth','Twentieth','Twenty-First','Twenty-Second','Twenty-Third','Twenty-Fourth','Twenty-Fifth','Twenty-Sixth','Twenty-Seventh','Twenty-Eighth','Twenty-Ninth','Thirtieth','Thirty-First'];
-        return ordinals[num - 1] || num.toString();
-    }
-    
-    function convertYearToWords(year) {
-        if (year < 1000) return year.toString();
-        const thousands = Math.floor(year / 1000);
-        const remainder = year % 1000;
-        if (remainder === 0) {
-            return numberToWords(thousands) + ' Thousand';
-        } else if (remainder < 100) {
-            return numberToWords(thousands) + ' Thousand ' + numberToWords(remainder);
-        } else {
-            const hundreds = Math.floor(remainder / 100);
-            const tens = remainder % 100;
-            if (tens === 0) {
-                return numberToWords(thousands) + ' Thousand ' + numberToWords(hundreds) + ' Hundred';
-            } else {
-                return numberToWords(thousands) + ' Thousand ' + numberToWords(hundreds) + ' Hundred ' + numberToWords(tens);
-            }
-        }
-    }
-    
-    function numberToWords(num) {
-        const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
-        const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-        if (num < 20) return ones[num];
-        if (num < 100) {
-            return tens[Math.floor(num / 10)] + (num % 10 ? ' ' + ones[num % 10] : '');
-        }
-        return num.toString();
-    }
-    
-    function convertToUrduWords(num) {
-        const urduNumbers = ['صفر','ایک','دو','تین','چار','پانچ','چھ','سات','آٹھ','نو','دس','گیارہ','بارہ','تیرہ','چودہ','پندرہ','سولہ','سترہ','اٹھارہ','انیس','بیس','اکیس','بائیس','تئیس','چوبیس','پچیس','چھبیس','ستائیس','اٹھائیس','انتیس','تیس','اکتیس'];
-        return urduNumbers[num] || num.toString();
-    }
-    
-    function convertYearToUrduWords(year) {
-        if (year < 1000) {
-            return convertToUrduWords(year);
-        }
-        if (year >= 1000 && year < 2000) {
-            let hundreds = Math.floor(year / 100);
-            let remainder = year % 100;
-            if (hundreds === 10) {
-                return 'ایک ہزار' + (remainder ? ' ' + convertToUrduWords(remainder) : '');
-            } else {
-                let hundredsWord = convertToUrduWords(hundreds) + ' سو';
-                if (remainder === 0) {
-                    return hundredsWord;
-                } else {
-                    return hundredsWord + ' ' + convertToUrduWords(remainder);
-                }
-            }
-        }
-        const thousands = Math.floor(year / 1000);
-        const remainder = year % 1000;
-        let thousandsWord;
-        if (thousands === 1) {
-            thousandsWord = 'ایک ہزار';
-        } else if (thousands === 2) {
-            thousandsWord = 'دو ہزار';
-        } else {
-            thousandsWord = convertToUrduWords(thousands) + ' ہزار';
-        }
-        if (remainder === 0) {
-            return thousandsWord;
-        }
-        if (remainder < 100) {
-            return thousandsWord + ' ' + convertToUrduWords(remainder);
-        } else {
-            let hundreds = Math.floor(remainder / 100);
-            let tens = remainder % 100;
-            let hundredsWord;
-            if (hundreds === 1) {
-                hundredsWord = 'ایک سو';
-            } else {
-                hundredsWord = convertToUrduWords(hundreds) + ' سو';
-            }
-            if (tens === 0) {
-                return thousandsWord + ' ' + hundredsWord;
-            } else {
-                return thousandsWord + ' ' + hundredsWord + ' ' + convertToUrduWords(tens);
-            }
-        }
-    }
-
-    e('dob').addEventListener('change', function() {
-        e('dobInWords').value = dateToWords(this.value);
-    });
-
-    e('cameraBtn').addEventListener('click', () => { e('photoInput').setAttribute('capture','environment'); e('photoInput').click(); });
-    e('galleryBtn').addEventListener('click', () => { e('galleryInput').removeAttribute('capture'); e('galleryInput').click(); });
-    
-    function handleFileSelect(file) { if(file) { const reader = new FileReader(); reader.onload = (e) => showCropper(e.target.result); reader.readAsDataURL(file); } }
-    e('photoInput').addEventListener('change', (e) => { handleFileSelect(e.target.files[0]); e.target.value = ''; });
-    e('galleryInput').addEventListener('change', (e) => { handleFileSelect(e.target.files[0]); e.target.value = ''; });
-    
-    function showCropper(src) { 
-        e('cropperModal').style.display = 'flex'; 
-        e('cropperImage').src = src; 
-        if (cropper) cropper.destroy(); 
-        cropper = new Cropper(e('cropperImage'), { aspectRatio: 3/4, viewMode: 1, dragMode: 'move', autoCropArea: 1, cropBoxMovable: true, cropBoxResizable: true, background: false }); 
-    }
-    
-    e('cropBtn').addEventListener('click', () => { 
-        if (cropper) { 
-            const canvas = cropper.getCroppedCanvas({ width: 300, height: 400 }); 
-            canvas.toBlob((blob) => {
-                currentPhotoBlob = blob;
-                e('studentPhoto').src = canvas.toDataURL('image/jpeg');
-                e('defaultPhotoLogo').classList.add('hidden');
-                e('studentPhoto').classList.remove('hidden'); 
-                e('userIcon').classList.add('hidden'); 
-                e('cropperModal').style.display = 'none'; 
-                cropper.destroy(); cropper = null;
-            }, 'image/jpeg', 0.9);
-        }
-    });
-    
-    e('cancelCropBtn').addEventListener('click', () => { e('cropperModal').style.display = 'none'; if(cropper) { cropper.destroy(); cropper = null; } });
-
-    async function uploadPhoto(studentId, blob) {
-        if (!blob) return null;
-        const t = translations[isUrdu ? 'ur' : 'en'];
-        const fileName = `students/${studentId}_${Date.now()}.jpg`;
-        const storageRef = storage.ref().child(fileName);
-        showMessage(t.uploading, true);
-        try {
-            const snapshot = await storageRef.put(blob);
-            const downloadURL = await snapshot.ref.getDownloadURL();
-            return downloadURL;
-        } catch (error) {
-            console.error('Upload error:', error);
-            showMessage('Upload failed: ' + error.message, false);
-            return null;
-        }
-    }
-
-    function getClassCounts() { 
-        const counts = {}; 
-        classList.forEach(cls => counts[cls] = 0); 
-        students.forEach(s => { 
-            if (s.active !== false && s.class && counts.hasOwnProperty(s.class)) counts[s.class]++; 
-        }); 
-        return counts; 
-    }
-    
-    function getSectionCounts(className) {
-        const secCounts = { 'A':0, 'B':0, 'C':0 };
-        students.forEach(s => {
-            if (s.active !== false && s.class === className && s.section && secCounts.hasOwnProperty(s.section)) secCounts[s.section]++;
-        });
-        return secCounts;
-    }
-    
-    function toggleSectionField() {
-        const selectedClass = e('class').value;
-        const sectionGroup = e('sectionGroup');
-        const sectionSelect = e('section');
-        if (sectionsWithClasses.includes(selectedClass)) {
-            sectionGroup.style.display = 'block';
-            if (!sectionSelect.value) sectionSelect.value = 'A';
-        } else {
-            sectionGroup.style.display = 'none';
-            sectionSelect.value = '';
-        }
-    }
-    
-    e('class').addEventListener('change', toggleSectionField);
-    
-    function renderClassFilter() { 
-        const t = translations[isUrdu ? 'ur' : 'en']; 
-        const counts = getClassCounts(); 
-        let html = `<div class="class-badge ${selectedClass === 'all' ? 'active' : ''}" onclick="filterByClass('all')"><i class="fas fa-users"></i> ${t.allClasses} <span class="count">${students.filter(s => s.active !== false).length}</span></div>`;
-        classList.forEach(cls => { const count = counts[cls] || 0; if (count > 0 || selectedClass === cls) html += `<div class="class-badge ${selectedClass === cls ? 'active' : ''}" onclick="filterByClass('${cls}')">${cls} <span class="count">${count}</span></div>`; });
-        e('classFilterBadges').innerHTML = html;
-        
-        // Section filter row
-        const sectionRow = e('sectionFilterRow');
-        if (selectedClass !== 'all' && sectionsWithClasses.includes(selectedClass)) {
-            const secCounts = getSectionCounts(selectedClass);
-            let secHtml = `<span style="font-weight:600; margin-right:8px;">${t.section}:</span>`;
-            secHtml += `<div class="section-badge ${selectedSection === '' ? 'active' : ''}" onclick="filterBySection('')">${t.allClasses}</div>`;
-            sectionOptions.forEach(sec => {
-                secHtml += `<div class="section-badge ${selectedSection === sec ? 'active' : ''}" onclick="filterBySection('${sec}')">${sec} <span class="count">(${secCounts[sec]})</span></div>`;
-            });
-            sectionRow.innerHTML = secHtml;
-            sectionRow.style.display = 'flex';
-        } else {
-            sectionRow.style.display = 'none';
-            selectedSection = '';
-        }
-        
-        // Class stats with sections
-        let statsHtml = '';
-        classList.forEach(cls => {
-            const count = counts[cls] || 0;
-            if (count > 0) {
-                let sectionHtml = '';
-                if (sectionsWithClasses.includes(cls)) {
-                    const secCounts = getSectionCounts(cls);
-                    sectionHtml = `<div class="section-stats">${sectionOptions.map(sec => `<span>${sec}: ${secCounts[sec]}</span>`).join(' | ')}</div>`;
-                }
-                statsHtml += `<div class="class-stat-item"><div class="class-name">${cls}</div><div class="class-count">${count}</div>${sectionHtml}</div>`;
-            }
-        });
-        e('classStats').innerHTML = statsHtml || '<div class="no-data">📊 No students</div>';
-    }
-    
-    window.filterByClass = (className) => { selectedClass = className; selectedSection = ''; renderClassFilter(); renderList(); };
-    window.filterBySection = (section) => { selectedSection = section; renderList(); renderClassFilter(); };
-    e('clearFilterBtn').onclick = () => { selectedClass = 'all'; selectedSection = ''; renderClassFilter(); renderList(); };
-
-    studentsRef.on('value', (snapshot) => { 
-        const data = snapshot.val(); 
-        students = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : []; 
-        students.forEach(s => { if (s.active === undefined) s.active = true; });
-        updateStats(); 
-        renderClassFilter(); 
-        renderList();
-        updateRotatingCard();
-    });
-    
-    function updateStats() { 
-        const activeStudents = students.filter(s => s.active !== false);
-        e('totalStudents').textContent = activeStudents.length; 
-        const uniqueClasses = new Set(activeStudents.map(s => s.class).filter(Boolean)); 
-        e('totalClasses').textContent = uniqueClasses.size; 
-    }
-    
-    function showMessage(msg, ok = true) { 
-        const div = document.createElement('div'); 
-        div.className = ok ? 'success-message' : 'error-message'; 
-        div.innerHTML = msg; 
-        e('messageContainer').innerHTML = ''; 
-        e('messageContainer').appendChild(div); 
-        setTimeout(() => { if(div.parentNode) div.remove(); }, 3000); 
-    }
-    
-    function setAutoAdmissionDate() { e('admissionDate').value = new Date().toISOString().split('T')[0]; }
-
-    function startRotation() {
-        if (rotationInterval) clearInterval(rotationInterval);
-        rotationInterval = setInterval(() => {
-            e('rotatingClassCount').classList.add('fade-out');
-            e('rotatingClassName').classList.add('fade-out');
-            setTimeout(() => {
-                currentClassIndex = (currentClassIndex + 1) % classList.length;
-                updateRotatingCard();
-                e('rotatingClassCount').classList.remove('fade-out');
-                e('rotatingClassName').classList.remove('fade-out');
-            }, 300);
-        }, 3000);
-    }
-
-    function updateRotatingCard() {
-        const className = classList[currentClassIndex];
-        const counts = getClassCounts();
-        e('rotatingClassCount').textContent = counts[className] || 0;
-        e('rotatingClassName').textContent = className;
-    }
-
-    function isDuplicateAdmissionNo(admNo, excludeId = null) {
-        return students.some(s => s.admNo === admNo && (excludeId === null || s.id !== excludeId));
-    }
-
-    window.promoteStudent = async (id, passed) => {
-        const student = students.find(s => s.id === id);
-        if (!student) {
-            showMessage("Student not found", false);
-            return;
-        }
-        if (student.active === false) {
-            showMessage("Cannot promote a student who has left school.", false);
-            return;
-        }
-
-        const t = translations[isUrdu ? 'ur' : 'en'];
-        const currentClass = student.class;
-        const classIndex = classList.indexOf(currentClass);
-        
-        if (classIndex === -1) {
-            showMessage(t.classNotFound, false);
-            return;
-        }
-        
-        if (passed) {
-            if (classIndex === classList.length - 1) {
-                showMessage(t.maxClass, false);
-                return;
-            }
-            const confirmMsg = t.promoteConfirmPass;
-            if (!confirm(confirmMsg)) return;
-            
-            const newClass = classList[classIndex + 1];
-            let updateData = { class: newClass, updatedAt: new Date().toISOString() };
-            if (sectionsWithClasses.includes(newClass)) {
-                updateData.section = 'A';
-            } else {
-                updateData.section = null;
-            }
-            try {
-                await studentsRef.child(id).update(updateData);
-                showMessage(`✅ ${student.name} ${t.pass} -> ${newClass}`, true);
-                renderList();
-            } catch (error) {
-                console.error('Promotion error:', error);
-                showMessage('Error promoting student: ' + error.message, false);
-            }
-        } else {
-            const confirmMsg = t.promoteConfirmFail;
-            if (!confirm(confirmMsg)) return;
-            showMessage(`ℹ️ ${student.name} ${t.fail} (${currentClass})`, true);
-        }
     };
 
-    window.markLeft = async (id) => {
-        const student = students.find(s => s.id === id);
-        if (!student) return;
-        const t = translations[isUrdu ? 'ur' : 'en'];
-        if (student.active === false) {
-            showMessage(t.alreadyLeft, false);
-            return;
-        }
-        if (!confirm(t.leftConfirm)) return;
-        try {
-            await studentsRef.child(id).update({ active: false, leftDate: new Date().toISOString(), updatedAt: new Date().toISOString() });
-            showMessage(`✅ ${student.name} ${t.left}`, true);
-        } catch (error) {
-            showMessage('Error marking left', false);
-        }
-    };
+    document.getElementById("logoutBtn").onclick = () => auth.signOut();
+  }
 
-    function resetForm() { 
-        e('studentForm').reset(); 
-        e('defaultPhotoLogo').classList.remove('hidden');
-        e('studentPhoto').classList.add('hidden'); 
-        e('userIcon').classList.add('hidden'); 
-        e('studentPhoto').src = ''; 
-        e('dobInWords').value = '';
-        e('section').value = '';
-        e('sectionGroup').style.display = 'none';
-        currentId = null; 
-        e('saveBtn').classList.remove('hidden'); 
-        e('updateBtn').classList.add('hidden'); 
-        setAutoAdmissionDate(); 
-        if (lastSelectedClass) {
-            e('class').value = lastSelectedClass;
-            toggleSectionField();
-            if (lastSelectedSection) e('section').value = lastSelectedSection;
-        }
-        currentPhotoBlob = null;
-    }
-
-    window.editStudent = (id) => { 
-        const s = students.find(x => x.id === id); if(!s) return; 
-        currentId = id; 
-        e('admNo').value = s.admNo || ''; 
-        e('name').value = s.name || ''; 
-        e('class').value = s.class || ''; 
-        toggleSectionField();
-        if (s.section && sectionsWithClasses.includes(s.class)) e('section').value = s.section;
-        e('fatherName').value = s.fatherName || ''; 
-        e('caste').value = s.caste || '';
-        e('phone').value = s.phone || ''; 
-        e('dob').value = s.dob || ''; 
-        e('admissionDate').value = s.admissionDate || ''; 
-        e('dobInWords').value = s.dobInWords || dateToWords(s.dob) || '';
-        if (s.photo) { 
-            e('studentPhoto').src = s.photo; 
-            e('studentPhoto').classList.remove('hidden'); 
-            e('defaultPhotoLogo').classList.add('hidden');
-            e('userIcon').classList.add('hidden'); 
-            currentPhotoBlob = null;
-        } else { 
-            e('studentPhoto').classList.add('hidden'); 
-            e('defaultPhotoLogo').classList.remove('hidden');
-            e('userIcon').classList.add('hidden'); 
-            currentPhotoBlob = null;
-        }
-        lastSelectedClass = s.class || '';
-        lastSelectedSection = s.section || '';
-        e('saveBtn').classList.add('hidden'); e('updateBtn').classList.remove('hidden'); 
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
-        e('addPanel').classList.add('active'); 
-        document.querySelector('[data-tab="add"]').classList.add('active');
-        document.querySelector('[data-nav="add"]').classList.add('active');
-        document.querySelector('[data-nav="list"]').classList.remove('active');
-    };
+  function showAddCustomerModal() {
+    const modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.innerHTML = `<div class="modal-content"><h3>نیا کسٹمر شامل کریں</h3>
+    <input id="newName" placeholder="نام (لازمی)">
+    <input id="newPhone" placeholder="فون نمبر (اختیاری)">
+    <input id="newAccount" placeholder="اکاؤنٹ نمبر (اختیاری)">
+    <label>پروفائل تصویر (اختیاری)</label><input type="file" id="newProfilePic" accept="image/*">
+    <button id="saveNewCust" class="btn-primary">محفوظ کریں</button><button id="cancelNewCust" class="view-btn">منسوخ</button></div>`;
+    document.body.appendChild(modal);
     
-    window.deleteMe = async (id) => { 
-        if (confirm(isUrdu ? 'کیا آپ اسے حذف کرنا چاہتے ہیں؟' : 'Delete this record?')) { 
-            try { await db.ref('students/' + id).remove(); showMessage(isUrdu ? '✅ حذف کر دیا گیا' : '✅ Deleted successfully'); } 
-            catch (e) { showMessage('Error deleting', false); } 
-        } 
+    document.getElementById("saveNewCust").onclick = async () => {
+      let name = modal.querySelector("#newName").value.trim();
+      if(!name) { alert("نام لازمی ہے"); return; }
+      const file = modal.querySelector("#newProfilePic").files[0];
+      const btn = document.getElementById("saveNewCust");
+      
+      btn.disabled = true; btn.innerText = "محفوظ ہو رہا ہے...";
+      
+      let picUrl = "";
+      if(file) {
+        try { picUrl = await getBase64(file); } catch(e){}
+      }
+      
+      customers.push({ 
+        id: generateId(), 
+        name, 
+        phone: modal.querySelector("#newPhone").value, 
+        accountNumber: modal.querySelector("#newAccount").value, 
+        profilePic: picUrl 
+      });
+      saveCustomers(); modal.remove(); switchTab("customers");
     };
-    
-    window.printStudent = (id) => { const s = students.find(x => x.id === id); if(s) generateCertificate(s); };
-    
-    // --- New Share Function (Replaces Thermal Print) ---
-    window.shareStudentInfo = async (id) => {
-        const s = students.find(x => x.id === id);
-        if(!s) return;
-        const t = translations[isUrdu ? 'ur' : 'en'];
-        const dobInWords = s.dobInWords || dateToWords(s.dob) || '';
-        const sectionDisplay = s.section ? ` (${s.section})` : '';
-        
-        // Show loading message
-        showMessage(isUrdu ? 'تصویر بنائی جا رہی ہے...' : 'Generating image...', true);
+    document.getElementById("cancelNewCust").onclick = () => modal.remove();
+  }
 
-        // Create virtual container for snapshot (Compact 58mm style)
-        const container = document.createElement('div');
-        container.className = 'receipt-share-container';
-        
-        container.innerHTML = `
-            <div class="receipt-header">
-                <div class="receipt-title">${t.schoolName}</div>
-                <div class="receipt-subtitle">${t.thermalTitle}</div>
-            </div>
-            <div class="receipt-body">
-                <div class="receipt-row"><span class="receipt-label">${t.studentName}:</span> <span class="receipt-val">${s.name}</span></div>
-                <div class="receipt-row"><span class="receipt-label">${t.fatherNameLabel}:</span> <span class="receipt-val">${s.fatherName}</span></div>
-                <div class="receipt-row"><span class="receipt-label">${t.admNoLabel}:</span> <span class="receipt-val">${s.admNo}</span></div>
-                <div class="receipt-row"><span class="receipt-label">${t.class}:</span> <span class="receipt-val">${s.class}${sectionDisplay}</span></div>
-                <div class="receipt-row"><span class="receipt-label">${t.dobLabel}:</span> <span class="receipt-val">${formatDate(s.dob)}</span></div>
-                <div class="receipt-row"><span class="receipt-label">${t.phoneLabel}:</span> <span class="receipt-val">${s.phone}</span></div>
-                <div class="receipt-row"><span class="receipt-label">${t.admissionDateLabel}:</span> <span class="receipt-val">${formatDate(s.admissionDate)}</span></div>
-            </div>
-        `;
-        document.body.appendChild(container);
-
-        try {
-            // Convert to canvas
-            const canvas = await html2canvas(container, {
-                scale: 3, // High quality
-                useCORS: true,
-                backgroundColor: '#ffffff'
-            });
-            
-            canvas.toBlob(async (blob) => {
-                const file = new File([blob], `Student_${s.admNo}.jpg`, { type: 'image/jpeg', lastModified: new Date().getTime() });
-                
-                // Try Web Share API (Mobile Devices)
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            files: [file],
-                            title: isUrdu ? 'طالب علم کی معلومات' : 'Student Info',
-                            text: isUrdu ? `${s.name} کی تصدیقی معلومات` : `Details for ${s.name}`
-                        });
-                    } catch (err) {
-                        console.log('Share canceled or failed:', err);
-                    }
-                } else {
-                    // Fallback to Download (for Desktop or unsupported browsers)
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `Student_${s.admNo}.jpg`;
-                    link.click();
-                    showMessage(isUrdu ? 'شیئر آپشن موجود نہیں، تصویر ڈاؤن لوڈ ہو گئی' : 'Share not supported, image downloaded.', true);
-                }
-                
-                document.body.removeChild(container);
-            }, 'image/jpeg', 0.95);
-            
-        } catch (error) {
-            console.error('Error generating image', error);
-            showMessage(isUrdu ? 'تصویر بنانے میں مسئلہ آیا' : 'Error generating image', false);
-            document.body.removeChild(container);
-        }
-    };
-    
-    function generateCertificate(s) { 
-        const today = formatDate(new Date().toISOString().split('T')[0]);
-        const dobInWords = s.dobInWords || dateToWords(s.dob) || '';
-        const photoHtml = s.photo ? 
-            `<img src="${s.photo}" alt="Student Photo">` : 
-            `<div class="no-photo"><i class="fas fa-user-graduate"></i></div>`;
-        const sectionDisplay = s.section ? ` (${s.section})` : '';
-        const schoolNameUrdu = "گورنمنٹ ماڈل ہائیر سکینڈری سکول پشین";
-        
-        const html = `
-            <div class="professional-certificate" dir="rtl">
-                <div class="certificate-header">
-                    <img src="https://i.postimg.cc/gjYJbrGp/logo.png" class="certificate-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'60\' text-anchor=\'middle\' fill=\'%232e7d32\' font-family=\'Arial\'%3E🏫%3C/text%3E%3C/svg%3E'">
-                    <div class="certificate-school-name">${schoolNameUrdu}</div>
-                    <div class="certificate-title">سکول چھوڑنے کا سرٹیفکیٹ</div>
-                </div>
-                <div class="certificate-body">
-                    <div class="certificate-details">
-                        <p><strong>نام:</strong> ${s.name}</p>
-                        <p><strong>والد کا نام:</strong> ${s.fatherName}</p>
-                        <p><strong>داخلہ نمبر:</strong> ${s.admNo}</p>
-                        <p><strong>موجودہ کلاس:</strong> ${s.class}${sectionDisplay}</p>
-                        <p><strong>تاریخ پیدائش:</strong> ${formatDate(s.dob)}</p>
-                        <p><strong>تاریخ پیدائش (لفظی):</strong> ${dobInWords}</p>
-                        <p><strong>تاریخ داخلہ:</strong> ${formatDate(s.admissionDate)}</p>
-                        <p><strong>تاریخ اجرا:</strong> ${today}</p>
-                    </div>
-                    <div class="certificate-photo">
-                        ${photoHtml}
-                    </div>
-                </div>
-                <div class="certificate-signatures">
-                    <div class="signature-box">
-                        <div class="signature-line"></div>
-                        <div class="signature-label">دستخط (ریکارڈ انچارج)</div>
-                    </div>
-                    <div class="center-school">${schoolNameUrdu}</div>
-                    <div class="signature-box">
-                        <div class="signature-line"></div>
-                        <div class="signature-label">دستخط (پرنسپل)</div>
-                    </div>
-                </div>
-            </div>
-        `; 
-        e('certificateContent').innerHTML = html; 
-        e('certificateModal').style.display = 'flex'; 
-    }
-    
-    e('closeModal').onclick = () => e('certificateModal').style.display = 'none';
-    e('printCertificate').onclick = () => { 
-        const w = window.open('', '_blank'); 
-        w.document.write('<html><head><title>Certificate</title>');
-        w.document.write('<link rel="preconnect" href="https://fonts.googleapis.com">');
-        w.document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
-        w.document.write('<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">');
-        w.document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">');
-        w.document.write('<style>');
-        w.document.write(`
-            @font-face {
-                font-family: 'Jameel Noori Nastaleeq';
-                src: url('https://fonts.jameelnoori.com/jameel-noori-nastaleeq.woff2') format('woff2'),
-                     url('https://fonts.jameelnoori.com/jameel-noori-nastaleeq.woff') format('woff'),
-                     url('https://cdn.jsdelivr.net/gh/akeelali/jameel-noori-nastaleeq@main/Jameel-Noori-Nastaleeq.ttf') format('truetype');
-                font-weight: normal;
-                font-style: normal;
-            }
-            body { font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', Arial, sans-serif; background: #fff; padding: 20px; }
-            .professional-certificate {
-                border: 12px double #2e7d32;
-                padding: 30px 25px;
-                border-radius: 20px;
-                box-shadow: 0 0 30px rgba(0,80,0,0.2);
-                max-width: 700px;
-                margin: 0 auto;
-                background: #fff;
-                direction: rtl;
-                text-align: right;
-            }
-            .certificate-header { text-align: center; margin-bottom: 20px; }
-            .certificate-logo { width: 100px; height: auto; margin-bottom: 10px; }
-            .certificate-school-name { font-size: 2.5rem; color: #006400; font-weight: bold; line-height: 1.3; }
-            .certificate-title { font-size: 2rem; color: #2e7d32; border-bottom: 2px solid #a5d6a7; display: inline-block; padding-bottom: 5px; margin: 15px 0 25px; letter-spacing: 2px; }
-            .certificate-body { display: flex; gap: 20px; margin-bottom: 30px; }
-            .certificate-details { flex: 2; font-size: 1.2rem; line-height: 2; }
-            .certificate-details p { margin: 10px 0; display: flex; align-items: baseline; }
-            .certificate-details strong { min-width: 140px; color: #1b5e20; }
-            .certificate-photo { flex: 1; display: flex; justify-content: center; align-items: flex-start; }
-            .certificate-photo img { width: 130px; height: 160px; object-fit: cover; border: 3px solid #2e7d32; border-radius: 15px; background: #f1f8e9; padding: 5px; }
-            .certificate-photo .no-photo { width: 130px; height: 160px; border: 3px dashed #2e7d32; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: #f9fff9; color: #81c784; font-size: 3rem; }
-            .certificate-signatures {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 40px;
-                align-items: flex-end;
-            }
-            .signature-box {
-                text-align: center;
-                width: 200px;
-            }
-            .signature-line {
-                border-bottom: 2px solid #2e7d32;
-                margin: 10px 0 5px;
-                height: 30px;
-                width: 100%;
-            }
-            .signature-label {
-                font-weight: bold;
-                color: #1b5e20;
-                font-size: 1rem;
-            }
-            .center-school {
-                text-align: center;
-                font-weight: bold;
-                font-size: 1.3rem;
-                color: #006400;
-                align-self: center;
-            }
-        `);
-        w.document.write('</style></head><body>');
-        w.document.write(e('certificateContent').innerHTML);
-        w.document.write('</body></html>'); 
-        w.document.close(); 
-        w.print(); 
-    };
-    
-    e('exportExcelBtn').onclick = () => { 
-        const data = students.map(s => ({ 
-            'Admission No': s.admNo, 
-            'Name': s.name, 
-            'Class': s.class,
-            'Section': s.section || '',
-            "Father's Name": s.fatherName,
-            "Caste/Tribe": s.caste || '',
-            'Phone': s.phone, 
-            'DOB': formatDate(s.dob),
-            'DOB in Words': s.dobInWords || '', 
-            'Admission Date': formatDate(s.admissionDate),
-            'Status': s.active === false ? 'Left' : 'Current'
-        })); 
-        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Students"); XLSX.writeFile(wb, `GMHSS_Students_${new Date().toISOString().slice(0,10)}.xlsx`); 
-    };
-    
-    function renderList() { 
-        const term = e('searchInput').value.toLowerCase(); 
-        const t = translations[isUrdu ? 'ur' : 'en']; 
-        let filtered = students; 
-        if (selectedStatus === 'current') {
-            filtered = filtered.filter(s => s.active !== false);
-        } else if (selectedStatus === 'left') {
-            filtered = filtered.filter(s => s.active === false);
-        }
-        if (selectedClass !== 'all') filtered = filtered.filter(s => s.class === selectedClass);
-        if (selectedSection) filtered = filtered.filter(s => s.section === selectedSection);
-        filtered = filtered.filter(s => s.name?.toLowerCase().includes(term) || s.admNo?.toLowerCase().includes(term) || s.fatherName?.toLowerCase().includes(term) || s.class?.toLowerCase().includes(term) || (s.caste && s.caste.toLowerCase().includes(term))); 
-        if (filtered.length === 0) { e('studentList').innerHTML = `<div class="no-data"><i class="fas fa-search fa-2x"></i><p>${t.noStudents}</p></div>`; return; } 
-        e('studentList').innerHTML = filtered.map(s => {
-            const leftBadge = s.active === false ? `<span class="left-badge">${t.leftStatus}</span>` : '';
-            const sectionDisplay = s.section ? ` | ${t.section}: ${s.section}` : '';
-            // Thermal button changed to Share button
-            return `<div class="student-card"><div class="student-avatar">${s.photo ? `<img src="${s.photo}" style="width:100%;height:100%;object-fit:cover">` : '<i class="fas fa-school fa-2x"></i>'}</div><div class="student-info"><div class="student-name">${s.name} ${leftBadge}</div><div class="student-details"><i class="fas fa-id-card"></i> ${t.class}: ${s.class}${sectionDisplay} | <i class="fas fa-hashtag"></i> ${s.admNo} | <i class="fas fa-users"></i> ${s.caste || ''}</div><div class="student-contact"><i class="fas fa-user"></i> ${s.fatherName} | <i class="fas fa-phone"></i> ${s.phone}</div><div class="student-actions"><button class="action-btn print" onclick="printStudent('${s.id}')"><i class="fas fa-print"></i> ${t.print}</button><button class="action-btn thermal" onclick="shareStudentInfo('${s.id}')"><i class="fas fa-share-alt"></i> ${t.thermal}</button><button class="action-btn edit" onclick="editStudent('${s.id}')"><i class="fas fa-edit"></i> ${t.edit}</button><button class="action-btn delete" onclick="deleteMe('${s.id}')"><i class="fas fa-trash"></i> ${t.delete}</button>${s.active !== false ? `<button class="action-btn pass" onclick="promoteStudent('${s.id}', true)"><i class="fas fa-check-circle"></i> ${t.pass}</button><button class="action-btn fail" onclick="promoteStudent('${s.id}', false)"><i class="fas fa-times-circle"></i> ${t.fail}</button><button class="action-btn left" onclick="markLeft('${s.id}')"><i class="fas fa-door-open"></i> ${t.left}</button>` : ''}</div></div></div>`}).join(''); 
-    }
-    e('searchInput').addEventListener('input', renderList);
-
-    e('class').addEventListener('change', function() {
-        lastSelectedClass = this.value;
-    });
-
-    e('studentForm').onsubmit = async (event) => {
-        event.preventDefault();
-        if (currentId !== null) return;
-        if (isSubmitting) return;
-        const t = translations[isUrdu ? 'ur' : 'en'];
-        if (!e('name').value || !e('class').value || !e('fatherName').value || !e('caste').value || !e('phone').value || !e('dob').value || !e('admissionDate').value) { showMessage(t.fillAllFields, false); return; }
-        const selectedClassValue = e('class').value;
-        if (sectionsWithClasses.includes(selectedClassValue) && !e('section').value) { showMessage(`Please select section for class ${selectedClassValue}`, false); return; }
-        const admNo = e('admNo').value.trim();
-        if (!admNo) { showMessage('Admission number is required', false); return; }
-        if (isDuplicateAdmissionNo(admNo)) { showMessage(t.duplicateAdmNo, false); return; }
-        e('saveBtn').disabled = true;
-        e('saveBtn').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.saving}`;
-        isSubmitting = true;
-
-        try {
-            const newStudentRef = studentsRef.push();
-            const studentId = newStudentRef.key;
-            
-            let photoUrl = '';
-            if (currentPhotoBlob) {
-                photoUrl = await uploadPhoto(studentId, currentPhotoBlob);
-            }
-
-            let dobInWords = e('dobInWords').value;
-            if (!dobInWords && e('dob').value) dobInWords = dateToWords(e('dob').value);
-            
-            const data = { 
-                admNo, 
-                name: e('name').value, 
-                class: selectedClassValue,
-                section: sectionsWithClasses.includes(selectedClassValue) ? e('section').value : null,
-                fatherName: e('fatherName').value, 
-                caste: e('caste').value,
-                phone: e('phone').value, 
-                dob: e('dob').value, 
-                dobInWords, 
-                admissionDate: e('admissionDate').value, 
-                photo: photoUrl,
-                createdAt: new Date().toISOString(), 
-                updatedAt: new Date().toISOString(),
-                active: true
-            };
-            await newStudentRef.set(data);
-            showMessage(t.saved);
-            lastSelectedClass = selectedClassValue;
-            lastSelectedSection = e('section').value;
-            resetForm();
-        } catch (error) { showMessage('Error: ' + error.message, false); } finally {
-            e('saveBtn').disabled = false;
-            e('saveBtn').innerHTML = `<i class="fas fa-save"></i> ${t.save}`;
-            isSubmitting = false;
-        }
-    };
-
-    e('updateBtn').onclick = async (event) => {
-        event.preventDefault();
-        if (!currentId) { showMessage('No record selected for update', false); return; }
-        const t = translations[isUrdu ? 'ur' : 'en'];
-        if (!e('name').value || !e('class').value || !e('fatherName').value || !e('caste').value || !e('phone').value || !e('dob').value || !e('admissionDate').value) { showMessage(t.fillAllFields, false); return; }
-        const selectedClassValue = e('class').value;
-        if (sectionsWithClasses.includes(selectedClassValue) && !e('section').value) { showMessage(`Please select section for class ${selectedClassValue}`, false); return; }
-        const admNo = e('admNo').value.trim();
-        if (!admNo) { showMessage('Admission number is required', false); return; }
-        if (isDuplicateAdmissionNo(admNo, currentId)) { showMessage(t.duplicateAdmNo, false); return; }
-        if (isSubmitting) return;
-        e('updateBtn').disabled = true;
-        e('updateBtn').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.updating}`;
-        isSubmitting = true;
-
-        try {
-            let photoUrl = e('studentPhoto').src && !e('studentPhoto').classList.contains('hidden') ? e('studentPhoto').src : '';
-            if (currentPhotoBlob) {
-                photoUrl = await uploadPhoto(currentId, currentPhotoBlob);
-            }
-
-            let dobInWords = e('dobInWords').value;
-            if (!dobInWords && e('dob').value) dobInWords = dateToWords(e('dob').value);
-            
-            const updatedData = { 
-                admNo, 
-                name: e('name').value, 
-                class: selectedClassValue,
-                section: sectionsWithClasses.includes(selectedClassValue) ? e('section').value : null,
-                fatherName: e('fatherName').value, 
-                caste: e('caste').value,
-                phone: e('phone').value, 
-                dob: e('dob').value, 
-                dobInWords, 
-                admissionDate: e('admissionDate').value, 
-                photo: photoUrl, 
-                updatedAt: new Date().toISOString() 
-            };
-            const originalStudent = students.find(s => s.id === currentId);
-            if (originalStudent && originalStudent.createdAt) updatedData.createdAt = originalStudent.createdAt;
-            if (originalStudent && originalStudent.active !== undefined) updatedData.active = originalStudent.active;
-            
-            await studentsRef.child(currentId).update(updatedData);
-            showMessage(t.updated);
-            lastSelectedClass = selectedClassValue;
-            lastSelectedSection = e('section').value;
-            resetForm();
-        } catch (error) { showMessage('Error updating record: ' + error.message, false); } finally {
-            e('updateBtn').disabled = false;
-            e('updateBtn').innerHTML = `<i class="fas fa-edit"></i> ${t.update}`;
-            isSubmitting = false;
-        }
-    };
-
-    document.querySelectorAll('.tab, .nav-item').forEach(btn => { 
-        btn.onclick = () => { 
-            const tab = btn.dataset.tab || btn.dataset.nav; 
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
-            document.querySelectorAll('.tab, .nav-item').forEach(t => t.classList.remove('active')); 
-            e(tab + 'Panel').classList.add('active'); 
-            btn.classList.add('active'); 
-            if (tab === 'add' && currentId === null) setAutoAdmissionDate(); 
-        }; 
-    });
-
-    setLanguage('ur');
-    e('btnUrdu').classList.add('active');
-    e('btnEnglish').classList.remove('active');
-    e('loginBtnUrdu').classList.add('active');
-    e('loginBtnEnglish').classList.remove('active');
+  window.onload = () => {
+    initAuth(); initDarkMode();
+    document.getElementById("fabAddCustomer").addEventListener("click", showAddCustomerModal);
+    document.querySelectorAll(".nav-item").forEach(btn => btn.addEventListener("click", () => {
+      currentCustomerProfileId = null; switchTab(btn.dataset.nav);
+    }));
+  };
 </script>
 </body>
 </html>
