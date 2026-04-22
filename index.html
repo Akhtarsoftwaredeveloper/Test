@@ -87,8 +87,9 @@
       border-bottom: 1px solid var(--border-light);
       box-shadow: var(--shadow-sm);
     }
-    .logo-area { text-align: center; flex: 1; }
-    .logo { font-weight: 700; font-size: 0.85rem; color: var(--accent); letter-spacing: -0.3px; white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis; max-width: 180px; }
+    .logo-area { text-align: center; flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .logo-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent); background: white; }
+    .logo-text { font-weight: 700; font-size: 0.85rem; color: var(--accent); letter-spacing: -0.3px; white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis; max-width: 180px; }
     .subtitle { font-size: 0.6rem; color: var(--text-secondary); }
     .header-actions { display: flex; gap: 8px; }
     .moon-btn {
@@ -145,6 +146,7 @@
     
     /* Customer & Transaction cards with avatar */
     .customer-card, .transaction-card { background: var(--card-bg); border-radius: 18px; padding: 12px; margin-bottom: 10px; box-shadow: var(--shadow-sm); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .customer-card { position: relative; }
     .transaction-card { align-items: flex-start; }
     .transaction-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--accent-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .transaction-details { flex: 1; min-width: 140px; }
@@ -156,6 +158,7 @@
     
     .view-btn { background: var(--accent-light); border: none; padding: 6px 12px; border-radius: 30px; font-weight: 500; color: var(--accent); cursor: pointer; font-size: 0.7rem; white-space: nowrap; }
     .edit-icon, .delete-icon { cursor: pointer; margin: 0 4px; font-size: 1.3rem; padding: 6px; border-radius: 50%; background: var(--accent-light); transition: 0.1s; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; }
+    .delete-icon:hover { background: #ef444420; color: #ef4444; }
     
     /* Modal for receipt (read mode) */
     .image-preview-modal {
@@ -175,7 +178,6 @@
     .back-button { background: var(--surface); border: none; padding: 6px 16px; border-radius: 40px; margin: 8px 12px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.7rem; }
     
     .transaction-item { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-light); gap: 8px; }
-    .transaction-item .customer-avatar-small { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
     .search-bar { margin: 10px 12px; background: var(--surface); border-radius: 40px; padding: 4px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border-light); }
     .search-bar input { background: transparent; border: none; padding: 8px 0; margin: 0; font-size: 0.8rem; }
     .running-balance { font-size: 0.65rem; color: var(--text-secondary); }
@@ -186,11 +188,15 @@
     }
     .view, .app-container, .bottom-nav, .app-header, .stats-grid, .customer-grid, .txn-list { overflow-x: hidden !important; }
     img, canvas { max-width: 100%; height: auto; }
+    
+    /* Login card with logo */
+    .login-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 2px solid var(--accent); background: white; }
   </style>
 </head>
 <body>
 <div id="loginContainer" class="app-container" style="display: flex; align-items: center; justify-content: center;">
   <div class="card" style="width: 85%; text-align: center;">
+    <img src="https://kommodo-ai-prod-public.komododecks.com/202604/22/PYG6NnYhkU9XAh9DQ7CB/image.png" alt="لوگو" class="login-logo" onerror="this.onerror=null; this.style.display='none';">
     <h2 style="font-size:1.1rem;">🚛 نور احمد ٹائرز</h2>
     <p style="font-size:0.75rem;">پیشگی بقایا نظام</p>
     <input type="email" id="loginEmail" placeholder="ای میل">
@@ -206,8 +212,8 @@
       <button class="moon-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
     </div>
     <div class="logo-area">
-      <div class="logo">نور احمد پرانا ٹائر ڈیلر</div>
-      <div class="subtitle">کچلاک</div>
+      <img src="https://kommodo-ai-prod-public.komododecks.com/202604/22/PYG6NnYhkU9XAh9DQ7CB/image.png" alt="لوگو" class="logo-img" onerror="this.style.display='none';">
+      <div class="logo-text">نور احمد پرانا ٹائر ڈیلر</div>
     </div>
     <div style="width: 70px;"></div>
   </div>
@@ -244,6 +250,8 @@
 
   let customers = [], transactions = [], bankDetails = { name: "نور احمد پرانا ٹائر ڈیلر کچلاک", account: "PK36 NOOR 987654321", logo: "" };
   let currentCustomerProfileId = null;
+  const LOGO_URL = "https://kommodo-ai-prod-public.komododecks.com/202604/22/PYG6NnYhkU9XAh9DQ7CB/image.png";
+  
   function generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 8); }
   function getBase64(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error); }); }
 
@@ -263,63 +271,148 @@
   }
   function getCustomerBalance(custId) { let bal = 0; transactions.filter(t => t.customerId === custId).forEach(t => { if (t.type === "Credit") bal += t.amount; else bal -= t.amount; }); return bal; }
   function getTotals() { let totalIncome = 0, totalExpense = 0; transactions.forEach(t => { if (t.type === "Credit") totalIncome += t.amount; else totalExpense += t.amount; }); let totalBalance = customers.reduce((sum, c) => sum + getCustomerBalance(c.id), 0); return { totalBalance, totalIncome, totalExpense }; }
-  function filterTransactionsByDateRange(arr, filterType, customStart, customEnd) { /* same logic */ const now = new Date(); let startDate, endDate = new Date(); if (filterType === 'today') { startDate = new Date(now.setHours(0,0,0,0)); endDate = new Date(now.setHours(23,59,59,999)); } else if (filterType === 'week') { const firstDay = new Date(now.setDate(now.getDate() - now.getDay())); startDate = new Date(firstDay.setHours(0,0,0,0)); endDate = new Date(); } else if (filterType === 'month') { startDate = new Date(now.getFullYear(), now.getMonth(), 1); endDate = new Date(); } else if (filterType === 'year') { startDate = new Date(now.getFullYear(), 0, 1); endDate = new Date(); } else if (filterType === 'custom' && customStart && customEnd) { startDate = new Date(customStart); endDate = new Date(customEnd); endDate.setHours(23,59,59); } else return arr; return arr.filter(t => new Date(t.date) >= startDate && new Date(t.date) <= endDate); }
+  function filterTransactionsByDateRange(arr, filterType, customStart, customEnd) { const now = new Date(); let startDate, endDate = new Date(); if (filterType === 'today') { startDate = new Date(now.setHours(0,0,0,0)); endDate = new Date(now.setHours(23,59,59,999)); } else if (filterType === 'week') { const firstDay = new Date(now.setDate(now.getDate() - now.getDay())); startDate = new Date(firstDay.setHours(0,0,0,0)); endDate = new Date(); } else if (filterType === 'month') { startDate = new Date(now.getFullYear(), now.getMonth(), 1); endDate = new Date(); } else if (filterType === 'year') { startDate = new Date(now.getFullYear(), 0, 1); endDate = new Date(); } else if (filterType === 'custom' && customStart && customEnd) { startDate = new Date(customStart); endDate = new Date(customEnd); endDate.setHours(23,59,59); } else return arr; return arr.filter(t => new Date(t.date) >= startDate && new Date(t.date) <= endDate); }
 
   let reportFilter = 'all', reportStart = '', reportEnd = '';
-  function renderDashboard() { /* unchanged but keep as is */ const { totalBalance, totalIncome, totalExpense } = getTotals(); let filteredTxns = [...transactions]; if (reportFilter !== 'all') filteredTxns = filterTransactionsByDateRange(filteredTxns, reportFilter, reportStart, reportEnd); filteredTxns.sort((a,b)=>new Date(b.date)-new Date(a.date)); let filteredIncome = filteredTxns.filter(t=>t.type==="Credit").reduce((s,t)=>s+t.amount,0); let filteredExpense = filteredTxns.filter(t=>t.type==="Debit").reduce((s,t)=>s+t.amount,0); let tableRows = filteredTxns.map(t => { let cust = customers.find(c=>c.id===t.customerId); return `<tr><td>${cust ? cust.name : '?'}</td><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${cust?.accountNumber || '-'}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td></tr>`; }).join(''); let html = `<div class="stats-grid"><div class="stat-card"><div class="stat-title">کل بیلنس</div><div class="stat-amount">${totalBalance.toLocaleString()} PKR</div></div><div class="stat-card"><div class="stat-title">کل آمد</div><div class="stat-amount income-color">+${totalIncome.toLocaleString()} PKR</div></div><div class="stat-card"><div class="stat-title">کل ادائیگی</div><div class="stat-amount expense-color">-${totalExpense.toLocaleString()} PKR</div></div></div><div class="filter-bar"><span class="filter-chip ${reportFilter==='all'?'active':''}" data-filter="all">تمام</span><span class="filter-chip ${reportFilter==='today'?'active':''}" data-filter="today">آج</span><span class="filter-chip ${reportFilter==='week'?'active':''}" data-filter="week">اس ہفتہ</span><span class="filter-chip ${reportFilter==='month'?'active':''}" data-filter="month">اس ماہ</span><span class="filter-chip ${reportFilter==='year'?'active':''}" data-filter="year">اس سال</span><span class="filter-chip ${reportFilter==='custom'?'active':''}" data-filter="custom">اپنی تاریخ</span></div><div class="date-range ${reportFilter==='custom'?'':'hidden'}" style="margin:0 16px 12px; display:flex; gap:8px; flex-wrap:wrap;"><input type="date" id="reportStart" value="${reportStart}" style="flex:1"><input type="date" id="reportEnd" value="${reportEnd}" style="flex:1"><button class="view-btn" id="applyReportFilter">لگائیں</button></div><div class="card"><h4 style="font-size:0.85rem;">📊 فلٹر شدہ رپورٹ (${filteredTxns.length} ٹرانزیکشنز)</h4><div class="report-table"><table style="width:100%"><thead><tr><th>کسٹمر</th><th>تاریخ</th><th>اکاؤنٹ</th><th>قسم</th><th>رقم</th></tr></thead><tbody>${tableRows || '<tr><td colspan="5">کوئی ڈیٹا نہیں</td></tr>'}</tbody></table></div><div style="display:flex; justify-content:space-between; margin-top:12px; font-size:0.7rem; flex-wrap:wrap;"><span>کل وصول: <strong class="income-color">${filteredIncome.toLocaleString()} PKR</strong></span><span>کل ادائیگی: <strong class="expense-color">${filteredExpense.toLocaleString()} PKR</strong></span></div><button id="shareReportPdfBtn" class="share-btn"><i class="fas fa-file-pdf"></i> رپورٹ بطور تصویر شیئر کریں</button></div>`; document.getElementById("dashboardView").innerHTML = html; document.querySelectorAll(".filter-chip").forEach(chip => { chip.addEventListener("click", (e) => { reportFilter = chip.dataset.filter; if(reportFilter !== 'custom') { reportStart = reportEnd = ''; } renderDashboard(); }); }); document.getElementById("applyReportFilter")?.addEventListener("click", () => { reportStart = document.getElementById("reportStart").value; reportEnd = document.getElementById("reportEnd").value; if(reportStart && reportEnd) renderDashboard(); else alert("تاریخ کی حد منتخب کریں"); }); document.getElementById("shareReportPdfBtn")?.addEventListener("click", () => generateAndSharePDFReport(filteredTxns, filteredIncome, filteredExpense)); }
-  async function generateAndSharePDFReport(list, totalIn, totalOut) { /* unchanged but works */ const element = document.createElement('div'); element.style.padding = '16px'; element.style.background = 'white'; element.style.color = 'black'; element.style.direction = 'rtl'; let rows = list.map(t => { let cust = customers.find(c=>c.id===t.customerId); return `<tr><td>${cust?.name || '-'}</td><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${cust?.accountNumber || '-'}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td><td>${t.description || ''}</td></tr>`; }).join(''); element.innerHTML = `<h3>نور احمد ٹائرز</h3><h4>ٹرانزیکشن رپورٹ</h4><p>تاریخ: ${new Date().toLocaleDateString('ur-PK')}</p><table border="1" cellpadding="4" style="width:100%; border-collapse:collapse"><thead><tr><th>کسٹمر</th><th>تاریخ</th><th>اکاؤنٹ</th><th>قسم</th><th>رقم</th><th>تفصیل</th></tr></thead><tbody>${rows}</tbody></table><p>کل وصول: ${totalIn.toLocaleString()} PKR | کل ادائیگی: ${totalOut.toLocaleString()} PKR</p>`; document.body.appendChild(element); try { const canvas = await html2canvas(element, { scale: 2 }); const imgData = canvas.toDataURL('image/png'); if (navigator.share) { const blob = await (await fetch(imgData)).blob(); await navigator.share({ title: 'بینک رپورٹ', files: [new File([blob], 'bank_report.png', { type: 'image/png' })] }); } else { const link = document.createElement('a'); link.href = imgData; link.download = 'bank_report.png'; link.click(); alert("رپورٹ ڈاؤن لوڈ ہوگئی۔"); } } catch(e) { alert("رپورٹ شیئر نہیں ہو سکی"); } finally { element.remove(); } }
-
-  // Helper: show image in fullscreen modal (read mode)
-  function showImageModal(imgSrc) {
-    const modal = document.createElement('div');
-    modal.className = 'image-preview-modal';
-    modal.innerHTML = `<img src="${imgSrc}" alt="رسید کی تصویر" style="max-width:90%; max-height:90%; object-fit:contain;">`;
-    modal.addEventListener('click', () => modal.remove());
-    document.body.appendChild(modal);
+  function renderDashboard() {
+    const { totalBalance, totalIncome, totalExpense } = getTotals();
+    let filteredTxns = [...transactions];
+    if (reportFilter !== 'all') filteredTxns = filterTransactionsByDateRange(filteredTxns, reportFilter, reportStart, reportEnd);
+    filteredTxns.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    let filteredIncome = filteredTxns.filter(t=>t.type==="Credit").reduce((s,t)=>s+t.amount,0);
+    let filteredExpense = filteredTxns.filter(t=>t.type==="Debit").reduce((s,t)=>s+t.amount,0);
+    let tableRows = filteredTxns.map(t => { let cust = customers.find(c=>c.id===t.customerId); return `<tr><td>${cust ? cust.name : '?'}</td><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${cust?.accountNumber || '-'}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td></tr>`; }).join('');
+    let html = `<div class="stats-grid"><div class="stat-card"><div class="stat-title">کل بیلنس</div><div class="stat-amount">${totalBalance.toLocaleString()} PKR</div></div><div class="stat-card"><div class="stat-title">کل آمد</div><div class="stat-amount income-color">+${totalIncome.toLocaleString()} PKR</div></div><div class="stat-card"><div class="stat-title">کل ادائیگی</div><div class="stat-amount expense-color">-${totalExpense.toLocaleString()} PKR</div></div></div><div class="filter-bar"><span class="filter-chip ${reportFilter==='all'?'active':''}" data-filter="all">تمام</span><span class="filter-chip ${reportFilter==='today'?'active':''}" data-filter="today">آج</span><span class="filter-chip ${reportFilter==='week'?'active':''}" data-filter="week">اس ہفتہ</span><span class="filter-chip ${reportFilter==='month'?'active':''}" data-filter="month">اس ماہ</span><span class="filter-chip ${reportFilter==='year'?'active':''}" data-filter="year">اس سال</span><span class="filter-chip ${reportFilter==='custom'?'active':''}" data-filter="custom">اپنی تاریخ</span></div><div class="date-range ${reportFilter==='custom'?'':'hidden'}" style="margin:0 16px 12px; display:flex; gap:8px; flex-wrap:wrap;"><input type="date" id="reportStart" value="${reportStart}" style="flex:1"><input type="date" id="reportEnd" value="${reportEnd}" style="flex:1"><button class="view-btn" id="applyReportFilter">لگائیں</button></div><div class="card"><h4 style="font-size:0.85rem;">📊 فلٹر شدہ رپورٹ (${filteredTxns.length} ٹرانزیکشنز)</h4><div class="report-table"><table style="width:100%"><thead><tr><th>کسٹمر</th><th>تاریخ</th><th>اکاؤنٹ</th><th>قسم</th><th>رقم</th></tr></thead><tbody>${tableRows || '<tr><td colspan="5">کوئی ڈیٹا نہیں</td></tr>'}</tbody></table></div><div style="display:flex; justify-content:space-between; margin-top:12px; font-size:0.7rem; flex-wrap:wrap;"><span>کل وصول: <strong class="income-color">${filteredIncome.toLocaleString()} PKR</strong></span><span>کل ادائیگی: <strong class="expense-color">${filteredExpense.toLocaleString()} PKR</strong></span></div><button id="shareReportPdfBtn" class="share-btn"><i class="fas fa-file-pdf"></i> رپورٹ بطور تصویر شیئر کریں</button></div>`; document.getElementById("dashboardView").innerHTML = html; document.querySelectorAll(".filter-chip").forEach(chip => { chip.addEventListener("click", (e) => { reportFilter = chip.dataset.filter; if(reportFilter !== 'custom') { reportStart = reportEnd = ''; } renderDashboard(); }); }); document.getElementById("applyReportFilter")?.addEventListener("click", () => { reportStart = document.getElementById("reportStart").value; reportEnd = document.getElementById("reportEnd").value; if(reportStart && reportEnd) renderDashboard(); else alert("تاریخ کی حد منتخب کریں"); }); document.getElementById("shareReportPdfBtn")?.addEventListener("click", () => generateAndSharePDFReport(filteredTxns, filteredIncome, filteredExpense)); }
+  
+  async function generateAndSharePDFReport(list, totalIn, totalOut) {
+    const element = document.createElement('div');
+    element.style.padding = '20px';
+    element.style.background = 'white';
+    element.style.color = 'black';
+    element.style.direction = 'rtl';
+    element.style.fontFamily = "'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Segoe UI'";
+    let rows = list.map(t => { let cust = customers.find(c=>c.id===t.customerId); return `<tr><td>${cust?.name || '-'}</td><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${cust?.accountNumber || '-'}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td><td>${t.description || ''}</td></tr>`; }).join('');
+    element.innerHTML = `
+      <div style="text-align: center; margin-bottom: 16px;">
+        <img src="${LOGO_URL}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #4f46e5;" onerror="this.style.display='none';">
+        <h2 style="color: #4f46e5; margin-top: 8px;">نور احمد پرانا ٹائر ڈیلر</h2>
+        <p style="font-size: 14px;">کچلاک | بینک رپورٹ</p>
+      </div>
+      <h4 style="text-align: center;">ٹرانزیکشن رپورٹ</h4>
+      <p style="font-size: 12px;">تاریخ: ${new Date().toLocaleDateString('ur-PK')}</p>
+      <table border="1" cellpadding="6" style="width:100%; border-collapse:collapse; font-size:13px;">
+        <thead><tr style="background:#f3f4f6;"><th>کسٹمر</th><th>تاریخ</th><th>اکاؤنٹ</th><th>قسم</th><th>رقم</th><th>تفصیل</th></tr></thead>
+        <tbody>${rows}</tbody>
+       </table>
+      <p style="margin-top:16px;"><strong>کل وصول: ${totalIn.toLocaleString()} PKR</strong> | <strong>کل ادائیگی: ${totalOut.toLocaleString()} PKR</strong></p>
+      <p style="font-size: 11px; text-align: center;">نور احمد ٹائرز - خودکار نظام</p>
+    `;
+    document.body.appendChild(element);
+    try {
+      const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/png');
+      if (navigator.share) {
+        const blob = await (await fetch(imgData)).blob();
+        await navigator.share({ title: 'بینک رپورٹ', files: [new File([blob], 'bank_report.png', { type: 'image/png' })] });
+      } else {
+        const link = document.createElement('a'); link.href = imgData; link.download = 'bank_report.png'; link.click(); alert("رپورٹ ڈاؤن لوڈ ہوگئی۔");
+      }
+    } catch(e) { alert("رپورٹ شیئر نہیں ہو سکی: " + e.message); }
+    finally { element.remove(); }
   }
 
-  // Render global transactions with customer avatar + receipt modal
-  function renderGlobalTransactions() {
-    let filtered = [...transactions].sort((a,b)=>new Date(b.date)-new Date(a.date));
-    let html = `<div class="txn-list">`;
-    filtered.forEach(t => {
-      let cust = customers.find(c=>c.id===t.customerId);
-      let avatarHtml = cust?.profilePic ? `<img src="${cust.profilePic}" class="transaction-avatar" style="width:42px;height:42px;">` : `<div class="transaction-avatar" style="background:var(--accent-light); display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>`;
-      let receiptHtml = t.receiptUrl ? `<img src="${t.receiptUrl}" class="receipt-thumb" data-receipt="${t.receiptUrl}" style="max-width:70px; border-radius:8px; cursor:pointer;">` : '';
-      html += `<div class="transaction-card">
-        ${avatarHtml}
-        <div class="transaction-details">
-          <strong>${cust?.name || 'گم شدہ کسٹمر'}</strong><br>
-          <small>${new Date(t.date).toLocaleString()}</small>
-          <div style="font-size:0.7rem;">${t.description || ''}</div>
-          ${receiptHtml}
+  // DELETE CUSTOMER FUNCTION
+  function deleteCustomer(customerId) {
+    if (!confirm("کیا آپ یقین سے اس کسٹمر کو حذف کرنا چاہتے ہیں؟ ساتھ ہی اس کی تمام ٹرانزیکشنز بھی ختم ہو جائیں گی۔")) return;
+    // Remove customer from array
+    customers = customers.filter(c => c.id !== customerId);
+    // Remove all transactions linked to this customer
+    transactions = transactions.filter(t => t.customerId !== customerId);
+    // Save to Firebase
+    saveCustomers();
+    saveTransactions();
+    // If we are currently viewing profile of deleted customer, go back to customers list
+    if (currentCustomerProfileId === customerId) {
+      currentCustomerProfileId = null;
+      switchTab("customers");
+    } else {
+      refreshActiveView();
+    }
+  }
+
+  function renderCustomersList(search = "") {
+    let filtered = customers.filter(c => c.name.includes(search) || (c.phone && c.phone.includes(search)) || (c.accountNumber && c.accountNumber.includes(search)));
+    let html = `<div class="search-bar"><i class="fas fa-search"></i><input type="text" id="custSearch" placeholder="تلاش کریں"></div><div class="customer-grid">`;
+    filtered.forEach(c => {
+      let balance = getCustomerBalance(c.id);
+      let avatar = c.profilePic ? `<img src="${c.profilePic}" class="circle-img" style="width:50px;height:50px">` : `<div style="width:50px;height:50px; border-radius:50%; background:var(--accent-light); display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>`;
+      html += `<div class="customer-card">
+        ${avatar}
+        <div style="flex:1">
+          <h4>${c.name}</h4>
+          <p>${c.phone || ''} ${c.accountNumber || ''}</p>
+          <small>بیلنس: ${balance.toLocaleString()} PKR</small>
         </div>
-        <div class="transaction-amount ${t.type==='Credit'?'credit':'debit'}">${t.type==='Credit'?'+':'-'} ${t.amount.toLocaleString()} PKR</div>
-        <div>
-          <i class="fas fa-edit edit-txn edit-icon" data-id="${t.id}"></i>
-          <i class="fas fa-trash delete-txn delete-icon" data-id="${t.id}"></i>
-        </div>
+        <button class="view-btn profile-btn" data-id="${c.id}">پروفائل</button>
+        <button class="view-btn delete-customer-btn" data-id="${c.id}" style="background:#ef444420; color:#ef4444;"><i class="fas fa-trash"></i> حذف</button>
       </div>`;
     });
     html += `</div>`;
-    document.getElementById("transactionsView").innerHTML = html;
-    // attach receipt click modal
-    document.querySelectorAll(".receipt-thumb").forEach(img => {
-      img.addEventListener("click", (e) => { e.stopPropagation(); const src = img.getAttribute("data-receipt") || img.src; if(src) showImageModal(src); });
-    });
-    document.querySelectorAll(".edit-txn").forEach(btn => btn.addEventListener("click", e => openEditTransactionModal(btn.dataset.id, null)));
-    document.querySelectorAll(".delete-txn").forEach(btn => btn.addEventListener("click", e => { if(confirm("حذف کریں؟")) deleteTransaction(btn.dataset.id); }));
+    document.getElementById("customersView").innerHTML = html;
+    document.getElementById("custSearch")?.addEventListener("input", e => renderCustomersList(e.target.value));
+    document.querySelectorAll(".profile-btn").forEach(btn => btn.addEventListener("click", e => showCustomerProfile(btn.dataset.id)));
+    document.querySelectorAll(".delete-customer-btn").forEach(btn => btn.addEventListener("click", e => deleteCustomer(btn.dataset.id)));
   }
 
-  function renderCustomersList(search = "") { /* unchanged but keep */ let filtered = customers.filter(c => c.name.includes(search) || (c.phone && c.phone.includes(search)) || (c.accountNumber && c.accountNumber.includes(search))); let html = `<div class="search-bar"><i class="fas fa-search"></i><input type="text" id="custSearch" placeholder="تلاش کریں"></div><div class="customer-grid">`; filtered.forEach(c => { let balance = getCustomerBalance(c.id); let avatar = c.profilePic ? `<img src="${c.profilePic}" class="circle-img" style="width:50px;height:50px">` : `<div style="width:50px;height:50px; border-radius:50%; background:var(--accent-light); display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>`; html += `<div class="customer-card">${avatar}<div style="flex:1"><h4>${c.name}</h4><p>${c.phone || ''} ${c.accountNumber || ''}</p><small>بیلنس: ${balance.toLocaleString()} PKR</small></div><button class="view-btn" data-id="${c.id}">پروفائل</button></div>`; }); html += `</div>`; document.getElementById("customersView").innerHTML = html; document.getElementById("custSearch")?.addEventListener("input", e => renderCustomersList(e.target.value)); document.querySelectorAll("[data-id]").forEach(btn => btn.addEventListener("click", e => showCustomerProfile(btn.dataset.id))); }
-  function editCustomerProfile(customer) { /* unchanged but functional */ const modal = document.createElement("div"); modal.className = "modal-overlay"; modal.innerHTML = `<div class="modal-content"><h3>پروفائل میں ترمیم</h3><input id="editName" value="${customer.name}" placeholder="نام"><input id="editPhone" value="${customer.phone || ''}" placeholder="فون نمبر"><input id="editAccount" value="${customer.accountNumber || ''}" placeholder="اکاؤنٹ نمبر"><label>پروفائل تصویر</label><input type="file" id="editProfilePic" accept="image/*">${customer.profilePic ? `<img src="${customer.profilePic}" class="circle-img" style="width:55px">` : ''}<button id="saveEditBtn" class="btn-primary">محفوظ کریں</button><button id="cancelEditBtn" class="view-btn">منسوخ</button></div>`; document.body.appendChild(modal); document.getElementById("saveEditBtn").onclick = async () => { let newName = modal.querySelector("#editName").value.trim(); if(!newName) { alert("نام لازمی ہے"); return; } const file = modal.querySelector("#editProfilePic").files[0]; if(file) { try { customer.profilePic = await getBase64(file); } catch(err) { alert("تصویر میں مسئلہ"); } } customer.name = newName; customer.phone = modal.querySelector("#editPhone").value; customer.accountNumber = modal.querySelector("#editAccount").value; saveCustomers(); modal.remove(); }; document.getElementById("cancelEditBtn").onclick = () => modal.remove(); }
-  async function shareCustomerReportAsImage(customer, transactionsList, totalAdded, totalWithdrawn, balance) { /* unchanged */ const element = document.createElement('div'); element.style.padding = '16px'; element.style.background = 'white'; element.style.color = 'black'; let rows = transactionsList.map(t => `<tr><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td><td>${t.description || ''}</td></tr>`).join(''); element.innerHTML = `<h3>نور احمد ٹائرز</h3><h4>کسٹمر رپورٹ: ${customer.name}</h4><p>فون: ${customer.phone || '-'} | اکاؤنٹ: ${customer.accountNumber || '-'}</p><p>کل وصول: ${totalAdded.toLocaleString()} PKR | ادائیگی: ${totalWithdrawn.toLocaleString()} PKR | بیلنس: ${balance.toLocaleString()} PKR</p><table border="1" cellpadding="4"><tr><th>تاریخ</th><th>قسم</th><th>رقم</th><th>تفصیل</th></tr>${rows}</table>`; document.body.appendChild(element); try { const canvas = await html2canvas(element, { scale: 2 }); const imgData = canvas.toDataURL('image/png'); if (navigator.share) { const blob = await (await fetch(imgData)).blob(); await navigator.share({ title: `${customer.name} کی رپورٹ`, files: [new File([blob], 'customer_report.png', { type: 'image/png' })] }); } else { const link = document.createElement('a'); link.href = imgData; link.download = 'customer_report.png'; link.click(); alert("رپورٹ ڈاؤن لوڈ ہوگئی۔"); } } catch(e) { alert("رپورٹ شیئر نہیں ہو سکی"); } finally { element.remove(); } }
+  function editCustomerProfile(customer) {
+    const modal = document.createElement("div"); modal.className = "modal-overlay";
+    modal.innerHTML = `<div class="modal-content"><h3>پروفائل میں ترمیم</h3><input id="editName" value="${customer.name}" placeholder="نام"><input id="editPhone" value="${customer.phone || ''}" placeholder="فون نمبر"><input id="editAccount" value="${customer.accountNumber || ''}" placeholder="اکاؤنٹ نمبر"><label>پروفائل تصویر</label><input type="file" id="editProfilePic" accept="image/*">${customer.profilePic ? `<img src="${customer.profilePic}" class="circle-img" style="width:55px">` : ''}<button id="saveEditBtn" class="btn-primary">محفوظ کریں</button><button id="cancelEditBtn" class="view-btn">منسوخ</button></div>`;
+    document.body.appendChild(modal);
+    document.getElementById("saveEditBtn").onclick = async () => {
+      let newName = modal.querySelector("#editName").value.trim();
+      if(!newName) { alert("نام لازمی ہے"); return; }
+      const file = modal.querySelector("#editProfilePic").files[0];
+      if(file) { try { customer.profilePic = await getBase64(file); } catch(err) { alert("تصویر میں مسئلہ"); } }
+      customer.name = newName; customer.phone = modal.querySelector("#editPhone").value; customer.accountNumber = modal.querySelector("#editAccount").value;
+      saveCustomers(); modal.remove();
+    };
+    document.getElementById("cancelEditBtn").onclick = () => modal.remove();
+  }
+  async function shareCustomerReportAsImage(customer, transactionsList, totalAdded, totalWithdrawn, balance) {
+    const element = document.createElement('div');
+    element.style.padding = '20px';
+    element.style.background = 'white';
+    element.style.color = 'black';
+    element.style.direction = 'rtl';
+    element.style.fontFamily = "'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq'";
+    let rows = transactionsList.map(t => `<tr><td>${new Date(t.date).toLocaleDateString('ur-PK')}</td><td>${t.type === 'Credit' ? 'وصول' : 'ادائیگی'}</td><td>${t.amount.toLocaleString()} PKR</td><td>${t.description || ''}</td></tr>`).join('');
+    element.innerHTML = `
+      <div style="text-align: center; margin-bottom: 16px;">
+        <img src="${LOGO_URL}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #4f46e5;" onerror="this.style.display='none';">
+        <h2 style="color: #4f46e5; margin-top: 8px;">نور احمد پرانا ٹائر ڈیلر</h2>
+        <p style="font-size: 14px;">کسٹمر رپورٹ</p>
+      </div>
+      <h4>${customer.name}</h4>
+      <p>فون: ${customer.phone || '-'} | اکاؤنٹ: ${customer.accountNumber || '-'}</p>
+      <p>کل وصول: ${totalAdded.toLocaleString()} PKR | ادائیگی: ${totalWithdrawn.toLocaleString()} PKR | بیلنس: ${balance.toLocaleString()} PKR</p>
+      <table border="1" cellpadding="6" style="width:100%; border-collapse:collapse;"><thead><tr><th>تاریخ</th><th>قسم</th><th>رقم</th><th>تفصیل</th></tr></thead><tbody>${rows}</tbody></table>
+      <p style="font-size:11px; margin-top:16px;">نور احمد ٹائرز - خودکار نظام</p>
+    `;
+    document.body.appendChild(element);
+    try {
+      const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/png');
+      if (navigator.share) { const blob = await (await fetch(imgData)).blob(); await navigator.share({ title: `${customer.name} کی رپورٹ`, files: [new File([blob], 'customer_report.png', { type: 'image/png' })] }); }
+      else { const link = document.createElement('a'); link.href = imgData; link.download = 'customer_report.png'; link.click(); alert("رپورٹ ڈاؤن لوڈ ہوگئی۔"); }
+    } catch(e) { alert("رپورٹ شیئر نہیں ہو سکی: " + e.message); }
+    finally { element.remove(); }
+  }
 
   let profileFilter = 'all', profileStart = '', profileEnd = '';
   function showCustomerProfile(custId) {
     currentCustomerProfileId = custId;
     const cust = customers.find(c=>c.id===custId);
-    if(!cust) return;
+    if(!cust) { alert("کسٹمر موجود نہیں"); switchTab("customers"); return; }
     let custTxns = transactions.filter(t=>t.customerId===custId);
     if(profileFilter !== 'all') custTxns = filterTransactionsByDateRange(custTxns, profileFilter, profileStart, profileEnd);
     custTxns.sort((a,b)=>new Date(a.date)-new Date(b.date));
@@ -333,16 +426,17 @@
       return `<div class="transaction-item"><div><small>${new Date(t.date).toLocaleString()}</small><div>${t.description} ${receiptHtml}</div></div><div class="${t.type==="Credit"?"credit":"debit"}">${t.type==="Credit"?"+":"-"} ${t.amount.toLocaleString()} PKR</div><div class="running-balance">بقایا: ${running.toLocaleString()} PKR</div><div><i class="fas fa-edit edit-txn-prof edit-icon" data-id="${t.id}"></i> <i class="fas fa-trash delete-txn-prof delete-icon" data-id="${t.id}"></i></div></div>`;
     }).join("");
     let avatar = cust.profilePic ? `<img src="${cust.profilePic}" class="circle-img">` : `<div class="circle-img" style="background:var(--accent-light); display:flex; align-items:center; justify-content:center;"><i class="fas fa-user fa-2x"></i></div>`;
-    let html = `<button class="back-button" id="backBtn"><i class="fas fa-arrow-right"></i> واپس</button><div class="card" style="text-align:center">${avatar}<h2 style="font-size:1.2rem">${cust.name}</h2><p style="font-size:0.7rem">📞 ${cust.phone || 'فون نہیں'} | 🏦 ${cust.accountNumber || 'اکاؤنٹ نہیں'}</p><div style="font-size:1.2rem; font-weight:700;">${balance.toLocaleString()} PKR</div><button id="editProfileBtn" class="view-btn" style="margin-top:6px"><i class="fas fa-pen"></i> پروفائل ایڈٹ</button></div>
+    let html = `<button class="back-button" id="backBtn"><i class="fas fa-arrow-right"></i> واپس</button>
+    <div class="card" style="text-align:center">${avatar}<h2 style="font-size:1.2rem">${cust.name}</h2><p style="font-size:0.7rem">📞 ${cust.phone || 'فون نہیں'} | 🏦 ${cust.accountNumber || 'اکاؤنٹ نہیں'}</p><div style="font-size:1.2rem; font-weight:700;">${balance.toLocaleString()} PKR</div><button id="editProfileBtn" class="view-btn" style="margin-top:6px"><i class="fas fa-pen"></i> پروفائل ایڈٹ</button><button id="deleteProfileBtn" class="view-btn" style="margin-top:6px; background:#ef444420; color:#ef4444; margin-right:8px;"><i class="fas fa-trash"></i> کسٹمر حذف کریں</button></div>
     <div style="display:flex; gap:8px; margin:0 12px; flex-wrap:wrap"><button id="receiveBtn" class="view-btn" style="background:#10b98120"><i class="fas fa-arrow-down"></i> اس نے بھیجے</button><button id="sendBtn" class="view-btn" style="background:#ef444420"><i class="fas fa-arrow-up"></i> اپ نے بھیجے</button><button id="shareCustReportBtn" class="view-btn" style="background:var(--accent); color:white"><i class="fas fa-share-alt"></i> رپورٹ شیئر</button></div>
     <div class="filter-bar"><span class="filter-chip ${profileFilter==='all'?'active':''}" data-pfilter="all">تمام</span><span class="filter-chip ${profileFilter==='today'?'active':''}" data-pfilter="today">آج</span><span class="filter-chip ${profileFilter==='week'?'active':''}" data-pfilter="week">ہفتہ</span><span class="filter-chip ${profileFilter==='month'?'active':''}" data-pfilter="month">ماہ</span><span class="filter-chip ${profileFilter==='year'?'active':''}" data-pfilter="year">سال</span><span class="filter-chip ${profileFilter==='custom'?'active':''}" data-pfilter="custom">تاریخ</span></div>
     <div id="profileCustomRange" class="date-range ${profileFilter==='custom'?'':'hidden'}" style="margin:0 12px 12px; display:flex; gap:8px; flex-wrap:wrap"><input type="date" id="profStart" value="${profileStart}"><input type="date" id="profEnd" value="${profileEnd}"><button class="view-btn" id="applyProfFilter">لگائیں</button></div>
     <div class="card"><h4 style="font-size:0.85rem">ٹرانزیکشن ہسٹری</h4>${txnHtml || "کوئی ٹرانزیکشن نہیں"}</div>`;
     document.getElementById("profileView").innerHTML = html;
-    // attach receipt modal for profile receipts
     document.querySelectorAll(".receipt-thumb").forEach(img => { img.addEventListener("click", (e) => { e.stopPropagation(); const src = img.getAttribute("data-receipt") || img.src; if(src) showImageModal(src); }); });
     document.getElementById("backBtn").onclick = () => { currentCustomerProfileId = null; switchTab("customers"); };
     document.getElementById("editProfileBtn").onclick = () => editCustomerProfile(cust);
+    document.getElementById("deleteProfileBtn").onclick = () => deleteCustomer(cust.id);
     document.getElementById("receiveBtn").onclick = () => openTransactionModal(custId, "Credit", "وصول رقم");
     document.getElementById("sendBtn").onclick = () => openTransactionModal(custId, "Debit", "ادائیگی");
     document.getElementById("shareCustReportBtn").onclick = () => shareCustomerReportAsImage(cust, custTxns, totalAdded, totalWithdrawn, balance);
@@ -356,8 +450,24 @@
   function deleteTransaction(txnId) { transactions = transactions.filter(t => t.id !== txnId); saveTransactions(); }
   function openTransactionModal(custId, type, label) { const modal = document.createElement("div"); modal.className = "modal-overlay"; modal.innerHTML = `<div class="modal-content"><h3>${label}</h3><input type="number" id="amount" placeholder="رقم PKR"><input type="text" id="desc" placeholder="تفصیل"><input type="file" id="receipt" accept="image/*"><button id="confirmTxn" class="btn-primary">تصدیق</button><button id="cancelTxn" class="view-btn">منسوخ</button></div>`; document.body.appendChild(modal); document.getElementById("confirmTxn").onclick = async () => { let amount = parseFloat(modal.querySelector("#amount").value); if(isNaN(amount) || amount<=0) { alert("درست رقم درج کریں"); return; } const file = modal.querySelector("#receipt").files[0]; let receiptUrl = ""; if(file) { try { receiptUrl = await getBase64(file); } catch(err){ alert("تصویر میں مسلئہ"); return; } } transactions.push({ id: generateId(), customerId: custId, date: new Date().toISOString(), amount, type, description: modal.querySelector("#desc").value || (type==="Credit"?"وصول":"ادائیگی"), receiptUrl }); saveTransactions(); modal.remove(); }; document.getElementById("cancelTxn").onclick = () => modal.remove(); }
   function openEditTransactionModal(txnId, custId) { const txn = transactions.find(t=>t.id===txnId); if(!txn) return; const modal = document.createElement("div"); modal.className = "modal-overlay"; modal.innerHTML = `<div class="modal-content"><h3>ٹرانزیکشن میں ترمیم</h3><input id="editAmount" value="${txn.amount}"><select id="editType"><option ${txn.type==="Credit"?"selected":""} value="Credit">وصول</option><option ${txn.type==="Debit"?"selected":""} value="Debit">ادائیگی</option></select><input id="editDesc" value="${txn.description}"><input type="datetime-local" id="editDate" value="${new Date(txn.date).toISOString().slice(0,16)}"><input type="file" id="editReceipt"><button id="updateBtn" class="btn-primary">اپ ڈیٹ</button><button id="cancelBtn" class="view-btn">منسوخ</button></div>`; document.body.appendChild(modal); document.getElementById("updateBtn").onclick = async () => { const file = modal.querySelector("#editReceipt").files[0]; if(file) { try { txn.receiptUrl = await getBase64(file); } catch(e){} } txn.amount = parseFloat(modal.querySelector("#editAmount").value); txn.type = modal.querySelector("#editType").value; txn.description = modal.querySelector("#editDesc").value; txn.date = new Date(modal.querySelector("#editDate").value).toISOString(); saveTransactions(); modal.remove(); }; document.getElementById("cancelBtn").onclick = () => modal.remove(); }
+  function renderGlobalTransactions() {
+    let filtered = [...transactions].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    let html = `<div class="txn-list">`;
+    filtered.forEach(t => {
+      let cust = customers.find(c=>c.id===t.customerId);
+      let avatarHtml = cust?.profilePic ? `<img src="${cust.profilePic}" class="transaction-avatar" style="width:42px;height:42px;">` : `<div class="transaction-avatar" style="background:var(--accent-light); display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>`;
+      let receiptHtml = t.receiptUrl ? `<img src="${t.receiptUrl}" class="receipt-thumb" data-receipt="${t.receiptUrl}" style="max-width:70px; border-radius:8px; cursor:pointer;">` : '';
+      html += `<div class="transaction-card">${avatarHtml}<div class="transaction-details"><strong>${cust?.name || 'گم شدہ کسٹمر'}</strong><br><small>${new Date(t.date).toLocaleString()}</small><div style="font-size:0.7rem;">${t.description || ''}</div>${receiptHtml}</div><div class="transaction-amount ${t.type==='Credit'?'credit':'debit'}">${t.type==='Credit'?'+':'-'} ${t.amount.toLocaleString()} PKR</div><div><i class="fas fa-edit edit-txn edit-icon" data-id="${t.id}"></i><i class="fas fa-trash delete-txn delete-icon" data-id="${t.id}"></i></div></div>`;
+    });
+    html += `</div>`;
+    document.getElementById("transactionsView").innerHTML = html;
+    document.querySelectorAll(".receipt-thumb").forEach(img => { img.addEventListener("click", (e) => { e.stopPropagation(); const src = img.getAttribute("data-receipt") || img.src; if(src) showImageModal(src); }); });
+    document.querySelectorAll(".edit-txn").forEach(btn => btn.addEventListener("click", e => openEditTransactionModal(btn.dataset.id, null)));
+    document.querySelectorAll(".delete-txn").forEach(btn => btn.addEventListener("click", e => { if(confirm("حذف کریں؟")) deleteTransaction(btn.dataset.id); }));
+  }
   function renderShareSection() { let html = `<div class="card" style="text-align:center"><h3 style="font-size:1rem">📱 بینک کی معلومات</h3><div><label>بینک کا نام</label><input type="text" id="bankName" value="${bankDetails.name}"></div><div><label>اکاؤنٹ نمبر</label><input type="text" id="bankAccount" value="${bankDetails.account}"></div><div><label>لوگو / تصویر</label><input type="file" id="bankLogo" accept="image/*">${bankDetails.logo ? `<img src="${bankDetails.logo}" class="circle-img" style="width:55px; margin-top:8px">` : ''}</div><button id="saveBankDetails" class="btn-primary">محفوظ کریں اور QR اپ ڈیٹ</button><div id="qrcode" style="display:flex; justify-content:center; margin:12px 0"></div><button id="shareQRBtn" class="share-btn">QR کوڈ شیئر کریں</button></div>`; document.getElementById("shareView").innerHTML = html; generateQRCode(); document.getElementById("saveBankDetails").onclick = async () => { bankDetails.name = document.getElementById("bankName").value; bankDetails.account = document.getElementById("bankAccount").value; const file = document.getElementById("bankLogo").files[0]; if(file) { try { bankDetails.logo = await getBase64(file); } catch(e){} } saveBankDetails(); generateQRCode(); }; document.getElementById("shareQRBtn").onclick = async () => { const qrCanvas = document.querySelector("#qrcode canvas"); if(qrCanvas) { qrCanvas.toBlob(async (blob) => { if(navigator.share) await navigator.share({ title: "بینک کیو آر کوڈ", files: [new File([blob], "bank_qr.png", { type: "image/png" })] }); else { const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "bank_qr.png"; link.click(); URL.revokeObjectURL(link.href); alert("تصویر ڈاؤن لوڈ ہوگئی"); } }); } }; }
   function generateQRCode() { document.getElementById("qrcode").innerHTML = ""; let data = `بینک: ${bankDetails.name}\nاکاؤنٹ: ${bankDetails.account}\nنور احمد ٹائرز`; new QRCode(document.getElementById("qrcode"), { text: data, width: 150, height: 150 }); }
+  function showImageModal(imgSrc) { const modal = document.createElement('div'); modal.className = 'image-preview-modal'; modal.innerHTML = `<img src="${imgSrc}" alt="رسید کی تصویر" style="max-width:90%; max-height:90%; object-fit:contain;">`; modal.addEventListener('click', () => modal.remove()); document.body.appendChild(modal); }
   let activeTab = "dashboard";
   function hideAllViews() { ["dashboardView","customersView","transactionsView","profileView","shareView"].forEach(v => document.getElementById(v).classList.add("hidden")); }
   function switchTab(tab) { activeTab = tab; hideAllViews(); if(tab === "dashboard") { renderDashboard(); document.getElementById("dashboardView").classList.remove("hidden"); } if(tab === "customers") { renderCustomersList(); document.getElementById("customersView").classList.remove("hidden"); } if(tab === "transactions") { renderGlobalTransactions(); document.getElementById("transactionsView").classList.remove("hidden"); } if(tab === "share") { renderShareSection(); document.getElementById("shareView").classList.remove("hidden"); } document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active")); document.querySelector(`.nav-item[data-nav="${tab}"]`).classList.add("active"); const fab = document.getElementById("fabAddCustomer"); if(tab === "customers") fab.classList.remove("hidden"); else fab.classList.add("hidden"); }
